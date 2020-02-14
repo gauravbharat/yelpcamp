@@ -22,8 +22,7 @@ var campgroundSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Comment"
         }
-    ],
-    slug: {type: String, unique: true}
+    ]
 });
 
 module.exports = mongoose.model("Campground", campgroundSchema);
