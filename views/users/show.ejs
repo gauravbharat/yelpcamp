@@ -1,0 +1,36 @@
+<%- include("../partials/header") %>
+
+<div class="row">
+    <div class="col-md-3 col-sm-6">
+        <h2 class="text-center"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
+        <div class="card">
+            <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
+            <div class="card-body">
+                <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
+                <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
+                    <% if(isFollowing) { %>
+                        <form action="/unfollow/<%= blogUser._id %>" method="GET">
+                            <button class="btn btn-primary btn-block">Following</button>
+                        </form>    
+                    <% } else { %>
+                        <form action="/follow/<%= blogUser._id %>" method="GET">
+                            <button class="btn btn-outline-primary btn-block">Follow</button>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>    
+        </div>    
+    </div>
+    <div class="col-md-9">
+        <% if(campgrounds) { %>
+            <h3><strong><%= blogUser.username %>'s</strong> campgrounds:</h3>
+            <ul>
+                <% campgrounds.forEach(function(campground){ %>
+                    <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
+                <% }); %>
+            </ul>    
+        <% } %>    
+    </div>
+</div>
+
+<%- include("../partials/footer") %>

@@ -1,0 +1,41 @@
+<%- include("partials/header") %>
+
+<div class="row">
+    <div class="col-md-12">
+        <form class="form-signin" action="/register" method="POST">
+
+            <h1 class="h3 mb-3 font-weight-normal text-center">Sign Up</h1>
+            <div class="form-label-group">
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+                <label for="username">Username</label>
+            </div>   
+            <div class="form-label-group"> 
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>    
+            <div class="form-label-group">
+                <input class="form-control" type="text" name="firstName" id="firstName" placeholder="First Name">
+                <label for="firstName">First Name</label>
+            </div>
+            <div class="form-label-group">
+                <input class="form-control" type="text" name="lastName" id="lastName" placeholder="Last Name">
+                <label for="lastName">Last Name</label>
+            </div>
+            <div class="form-label-group">
+                <input class="form-control" type="email" name="email" id="email" placeholder="e-mail" required>
+                <label for="email">e-mail</label>
+            </div>
+            <div class="form-label-group">
+                <input class="form-control" type="text" name="avatar" id="avatar" placeholder="Avatar URL">
+                <label for="avatar">Avatar URL</label>
+            </div>    
+
+            <button class="btn btn-lg btn-primary btn-block mt-2" type="submit">Sign up</button>
+
+            <div>
+                <a class="mt-5 mb-3 small" href="/campgrounds">Back to Campground's Page</a>
+            </div>           
+        </form>
+    </div>    
+</div>
+<%- include("partials/footer") %>

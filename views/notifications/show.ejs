@@ -1,0 +1,59 @@
+<%- include("../partials/header") %>
+
+<div class="row justify-content-md-center">
+    <div class="col-md-12">
+        <h1 class="text-center">Notifications</h1>
+        <% if(notifications) { %>
+            <% if(notifications.length > 0) { %>
+                <table class="table">
+                    <tbody>
+                    <% notifications.forEach(function(notification){ %>
+                        <tr>
+                            <td>
+                                <%= notification.username %> created a <a href="/campgrounds/<%= notification.campgroundId %>">new campground </a>
+                            </td>
+                            <td>
+                                <i class="small"><%= moment(notification.created).fromNow() %></i>
+                            </td>
+                            <td>
+                                <div class="float-right">
+                                    <form class="delete-form" action="/notifications/<%= notification._id %>?_method=DELETE" method="POST">
+                                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    </tbody>    
+                </table>
+            <% } else { %>
+                <hr>
+            <% } %>   
+
+
+            <!-- <div class="row">
+                <% notifications.forEach(function(notification){ %>
+                    <div class="col-md-12 mb-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="float-left">
+                                    <p><%= notification.username %> created a 
+                                        <a href="/campgrounds/<%= notification.campgroundId %>">new campground </a>
+                                        <i class="small"><%= moment(notification.created).fromNow() %></i>
+                                    </p>
+                                </div>    
+                                <div class="float-right">
+                                    <form class="delete-form" action="/notifications/<%= notification._id %>?_method=DELETE" method="POST">
+                                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </div> 
+                            </div>     
+                        </div>
+                    </div> 
+                <% }); %>
+            </div> -->
+        <% } %>
+    </div>
+</div>        
+
+<%- include("../partials/footer") %>
