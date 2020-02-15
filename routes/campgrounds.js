@@ -78,6 +78,7 @@ router.get("/", (req, res) => {
                 if(err){
                     console.log(err);
                 } else {
+                    delete req.session.redirectTo; //delete redirect to last page
                     res.render("campgrounds/index", {
                         campgrounds: allCampgrounds, 
                         page: 'campgrounds',

@@ -15,6 +15,7 @@ const fileName = "index.js";
 
 // Root route - HOME page
 router.get("/", (req, res) => {
+    delete req.session.redirectTo; //delete redirect to last page
     res.render("landing");
 });
 
@@ -24,6 +25,7 @@ router.get("/", (req, res) => {
 
 // show register form
 router.get("/register", function(req, res){
+    delete req.session.redirectTo; //delete redirect to last page
     res.render("register", {page: 'register'});
 });
 
@@ -61,18 +63,50 @@ router.post("/register", (req, res) => {
 
 // show login form
 router.get("/login", (req, res) => {
+    // set the return path for campground show page if user came
+    // after click on login (on campground page) to add comments
+    if(req.query) { 
+        redirectPath = req.query.r;
+        if (redirectPath && redirectPath.length > 0) {
+            let delPos = redirectPath.lastIndexOf("/");
+            if (delPos > 0) {
+                let featureName = redirectPath.substr(0, delPos);
+                if (featureName === "/campgrounds") {
+                    let campgroundId = redirectPath.slice(delPos + 1);
+                    if(mongoose.Types.ObjectId.isValid(campgroundId)) {
+                        req.session.redirectTo = redirectPath;
+                    }
+                }    
+            }    
+        }     
+    }    
+
     res.render("login", {page: 'login'});
 });
 
-// handle sign-in / login logic
-router.post("/login", passport.authenticate("local", 
-    {
-        successRedirect: "/campgrounds",
-        failureRedirect: "/login",
-        failureFlash: true,
-        successFlash: 'Welcome to YelpCamp!'
-    }), function(req, res){
+// handle sign-in / login logic - Colt way
+// router.post("/login", passport.authenticate("local", 
+//     {
+//         successRedirect: "/campgrounds",
+//         failureRedirect: "/login",
+//         failureFlash: true,
+//         successFlash: 'Welcome to YelpCamp!'
+//     }), function(req, res){
 
+// });
+
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', function (err, user, info) {
+        if(err) { return next(err); }
+        if(!user) { return res.redirect('/login'); }
+        req.logIn(user, function(err){
+            if(err) { return next(err); }
+            var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/campgrounds';
+            delete req.session.redirectTo;
+            req.flash("success", "Welcome to YelpCamp, " + user.username);
+            res.redirect(redirectTo);
+        });
+    })(req, res, next);
 });
 
 // logout route
@@ -84,6 +118,7 @@ router.get("/logout", (req, res) => {
 
 // forgot password
 router.get("/forgot", (req, res) => {
+    delete req.session.redirectTo; //delete redirect to last page
     res.render("users/forgot");
 });
 

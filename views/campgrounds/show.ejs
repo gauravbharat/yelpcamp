@@ -38,7 +38,9 @@
                     <div class="collapse" id="collapseComment">
                         <hr>
                         <% if(!currentUser) { %>
-                            <h6 class="p-3 mb-2 bg-light text-center">You need to login before you can comment. <a href="/login">Click here</a> to go to the login page.</h6>
+                            <p name="returnTo" style="display: none;">'/campgrounds/<%= campground._id %>'</p>
+
+                            <h6 class="p-3 mb-2 bg-light text-center">You need to login before you can comment. <a href="/login/?r=/campgrounds/<%= campground._id %>">Click here</a> to go to the login page.</h6>
                         <% } else { %> 
                             <form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
                                 <div class="form-label-group">
