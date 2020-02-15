@@ -525,4 +525,9 @@ router.delete("/notifications/:id", middleware.isLoggedIn, async (req, res) => {
 
 });
 
+// show login form
+router.get("/about", (req, res) => {
+    res.render("about", {page: 'about'});
+});
+
 module.exports = router;
