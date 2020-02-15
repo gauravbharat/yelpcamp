@@ -7,7 +7,7 @@
             <h1 class="text-center">Create a New Campground</h1>
             <hr>
             <div class="col-lg-8 mx-auto">    
-                <form class="form" action="/campgrounds" method="post" enctype="multipart/form-data">
+                <form class="was-validated" action="/campgrounds" method="post" enctype="multipart/form-data">
                     <div class="form-label-group">
                         <input class="form-control" type="text" id="name" name="campground[name]" placeholder="Campground Name" required>
                         <label for="name">Campground Name</label>
@@ -16,15 +16,17 @@
                         <input class="form-control" type="number" id="price" name="campground[price]" placeholder="price in $" min="0.01" step="0.01">
                         <label for="price">Price in $</label>
                     </div> 
-                    <!-- <div class="form-group"> 
-                        <input class="form-control"type="text" name="campground[image]" placeholder="image url">
+                    <!-- <div class="custom-file mb-3"> 
+                        <input class="custom-file-input" type="file" id="image" name="image" accept="image/*" required>
+                        <label class="custom-file-label" for="image">Choose file...</label>
+                        <div class="invalid-feedback">Select an image to upload!</div>
                     </div> -->
                     <div class="form-label-group"> 
                         <input class="form-control-file" type="file" id="image" name="image" accept="image/*" required>
-                        <label for="image">Image</label>
+                        <label for="image">Campground image</label>
                     </div>
                     <div class="form-label-group"> 
-                        <input class="form-control"type="text" id="description" name="campground[description]" placeholder="description">
+                        <input class="form-control"type="text" id="description" name="campground[description]" placeholder="description" required>
                         <label for="description">Description</label>
                     </div>
                     <div class="form-label-group">

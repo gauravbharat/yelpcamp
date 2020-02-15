@@ -23,7 +23,8 @@ var userSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
-    created: {type: Date, default: Date.now}
+    created: {type: Date, default: Date.now},
+    isPublisher: {type: Boolean, default: false}
 });
 
 userSchema.plugin(passportLocalMongoose);

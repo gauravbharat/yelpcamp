@@ -269,6 +269,58 @@ router.get("/users/:id", middleware.isLoggedIn, async (req, res) => {
     res.render("users/show", { blogUser: foundUser, campgrounds: foundCampgrounds }); 
 });
 
+// update Admin options for user
+router.put("/users/:id", middleware.isLoggedIn, async (req, res) => {
+    let userId;
+    let foundUser;
+
+    if(!req.user.isAdmin) {
+        req.flash("error", "You need to be an administrator to set these user options!");
+        return res.redirect("back");
+    }
+
+    if(req.body) {
+        if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+            userId = await mongoose.Types.ObjectId(req.params.id);
+        } else {
+            req.flash("error", "User ID is invalid!");
+            console.log("* " + middleware.getLogStr(
+                "index.js.put", 
+                "user ID",
+                req.params.id,
+                req
+            ));
+            return res.redirect("/campgrounds");
+        }
+
+        let userSearch = { _id: userId};
+
+        try {
+            let updateFields = {};
+            if(req.body.isAdmin) { 
+                updateFields.isAdmin = true
+            } else {
+                updateFields.isAdmin = false
+            }
+
+            if(req.body.isPublisher) { 
+                updateFields.isPublisher = true 
+            } else {
+                updateFields.isPublisher = false 
+            }
+
+            // console.log(updateFields);
+            let updatedUser= await User.findOneAndUpdate(userSearch, updateFields);
+        } catch (error) {
+            req.flash("error", "Error updating Admin fields! " + error.message );
+            return res.redirect("back");
+        }
+
+        req.flash("success", "Admin fields updated.");
+    }    
+    return res.redirect("/users/" + req.params.id);
+});
+
 // follow user
 router.get('/follow/:id', middleware.isLoggedIn, async (req, res) => {
     let userId;
