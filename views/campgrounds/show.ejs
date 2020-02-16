@@ -86,7 +86,7 @@
                                                 <!-- Delete comment button -->
                                                 <% if((currentUser && campground.author.id.equals(currentUser._id)) || (currentUser && comment.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin)){ %>
                                                     <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
-                                                        <a class="btn btn-sm btn-danger text-white" type="submit" role="button" name="outerDeleteButton" id="delBtn:<%= comment._id %>">Delete</a>
+                                                        <button class="btn btn-sm btn-danger" type="submit" role="button" name="outerDeleteButton" id="delBtn:<%= comment._id %>">Delete</button>
                                                     </form>
                                                 <% } %>   <!-- Is User authorized for Delete Comment button check ends --> 
                                             </div>

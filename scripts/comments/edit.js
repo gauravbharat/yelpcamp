@@ -43,7 +43,10 @@ function toggleEdit(p_currentElement, p_campId) {
                     }
                     let allDeleteButtons = document.getElementsByName("outerDeleteButton");
                     for(const delButton of allDeleteButtons){
-                        delButton.className = "btn btn-sm btn-danger disabled";
+                        delButton.className = "btn btn-sm btn-danger";
+                        delButton.type = "button"
+                        delButton.disabled = true;
+                        delButton.style.cursor = "default";
                     }
 
                     // dynamic form controls to edit comment, submit or cancel
@@ -100,7 +103,10 @@ function toggleEdit(p_currentElement, p_campId) {
                     }
                     let allDeleteButtons = document.getElementsByName("outerDeleteButton");
                     for(const delButton of allDeleteButtons){
-                        delButton.className = "btn btn-sm btn-danger text-white";
+                        delButton.className = "btn btn-sm btn-danger";
+                        delButton.disabled = false;
+                        delButton.type = "submit"
+                        delButton.style.cursor = "pointer";
                     }
                 }
             } //delPos > 0
