@@ -64,10 +64,19 @@ SESSION_SECRET=’Xe005osOAE8ZRMDReizQJjlLrrs=’ ruby sinatra-app.rb -p 8080
  */ 
 
 // PASSPORT CONFIGURATION - START
-app.use(require("express-session")({
+// app.use(require("express-session")({
+//     secret: "KfCTA8vDlpXzKtDBFGpj/hVWdsU=",
+//     resave: false,
+//     saveUninitialized: false
+// })); 
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+app.use(session({
     secret: "KfCTA8vDlpXzKtDBFGpj/hVWdsU=",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new MongoDBStore({ mongooseConnection: mongoose.connection })
 }));
 
 app.use(passport.initialize());
@@ -89,6 +98,15 @@ app.locals.moment = require('moment');
 
 app.use(async function(req, res, next){
     res.locals.currentUser = req.user;
+    // console.log("=============================================");
+    // console.log("session.store: " + session.store);
+    // console.log("session.Store(): " + session.Store());
+    // console.log("process.env.DATABASEURL: " + process.env.DATABASEURL);
+    // console.log("app.js::req.sessionId: " + req.sessionID);
+    // console.log("app.js::req.session.cookie.originalMaxAge: " + req.session.cookie.originalMaxAge);
+    // console.log("app.js::req.session.cookie.expires: " + req.session.cookie.expires);
+    res.locals.rememberMe = (req.session.cookie.originalMaxAge); //Gaurav - 02202020 - Remember me
+    app.locals.ua = req.get('User-Agent'); //TEMP
 
     if(req.user) {
         /* PERFORMANCE CHECK - Performance issue if user have thousands of notifications. Run as a separate process then or load first 5 and have a 'show more' button to load more notifications. */

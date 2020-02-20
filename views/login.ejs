@@ -11,12 +11,22 @@
             <div class="form-label-group"> 
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
                 <label for="password">Password</label>
-            </div>    
+            </div>
+            <!-- Gaurav-02202020 Remember Me changes - Start -->
+            <div class="checkbox mb-3 text-center">
+                <label>
+                  <input type="checkbox" name="remember" title="expires in 1 day" value="remember-me" <%= (rememberMe) ? 'checked' : '' %>> Remember me for a day*
+                </label>
+            </div>
+            <!-- Remember Me changes - End -->
             <button class="btn btn-lg btn-primary btn-block mt-2" type="submit">Sign in</button>
             <div>
-                <a class="mt-1 mb-3 small float-right" href="/campgrounds">Back to Campground's Page</a>
-                <a class="mt-1 mb-3 small float-left" href="/forgot">Forgot Password</a>
-            </div>           
+                <a class="mt-1 mb-1 small float-right" href="/campgrounds">Back to Campground's Page</a>
+                <a class="mt-1 mb-1 small float-left" href="/forgot">Forgot Password</a>
+            </div>     
+            <div>
+              <p class="mt-1 mb-3 small float-left">*Remain signed-in for 24hrs, to sign-in again later</p>
+            </div>
         </form>
     </div>    
 </div>    
