@@ -13,9 +13,9 @@
                 <label for="password">Password</label>
             </div>
             <!-- Gaurav-02202020 Remember Me changes - Start -->
-            <div class="checkbox mb-3 text-center">
+            <div class="checkbox mb-3 text-center remember" onmouseover="">
                 <label>
-                  <input type="checkbox" name="remember" title="expires in 1 day" value="remember-me" <%= (rememberMe) ? 'checked' : '' %>> Remember me for a day*
+                  <input type="checkbox" name="remember" value="remember-me" <%= (rememberMe) ? 'checked' : '' %>> Remember me for a day<span class="rememberCheckBox">*</span>
                 </label>
             </div>
             <!-- Remember Me changes - End -->
@@ -24,16 +24,11 @@
                 <a class="mt-1 mb-1 small float-right" href="/campgrounds">Back to Campground's Page</a>
                 <a class="mt-1 mb-1 small float-left" href="/forgot">Forgot Password</a>
             </div>     
-            <div>
-              <p class="mt-1 mb-3 small float-left">*Remain signed-in for 24hrs, to sign-in again later</p>
+            <div class="remember">
+              <p class="mt-1 mb-3 small float-left"><span class="rememberCheckBox">*Remain signed-in for 24hrs, to sign-in again later</span></p>
             </div>
         </form>
     </div>    
 </div>    
 
-<!-- <script>
-    window.onload = function() {
-        document.getElementById("username").focus();
-    }
-</script> -->
 <%- include("partials/footer") %>
