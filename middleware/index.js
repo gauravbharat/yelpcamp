@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 var Campground = require("../models/campground");
 var Comment = require("../models/comment");
+var User = require("../models/user");
 
 // all middleware goes here
 var middlewareObj = {};
@@ -171,6 +172,22 @@ middlewareObj.getLogStr = (pEventLocation, pInvalidField, pInvalidID, req) => {
     return retStr;    
 
 };
+
+middlewareObj.getUsersCount = async (searchObject) => {
+  let totalCount = 0;
+
+  try {
+    if(searchObject) {
+      totalCount = await User.countDocuments(searchObject);
+    } else {
+      totalCount = await User.countDocuments({});
+    }  
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  return totalCount;
+}
 
 async function findCampground (searchObject) {
         var foundCampground;
