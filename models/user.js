@@ -24,7 +24,8 @@ var userSchema = new mongoose.Schema({
         }
     ],
     created: {type: Date, default: Date.now},
-    isPublisher: {type: Boolean, default: false}
+    isPublisher: {type: Boolean, default: false},
+    isRequestedAdmin: {type: Boolean, default:false}
 });
 
 userSchema.plugin(passportLocalMongoose);

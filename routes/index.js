@@ -530,4 +530,80 @@ router.get("/about", (req, res) => {
     res.render("about", {page: 'about'});
 });
 
+// 03042020 - Gaurav - request admin access route
+router.get('/reqAdmin/:id/:option', middleware.isLoggedIn, async (req, res) => {
+  let userId;
+  let foundUser;
+
+  if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+      userId = await mongoose.Types.ObjectId(req.params.id);
+  } else {
+      req.flash("error", "User ID is invalid!");
+      console.log("* " + middleware.getLogStr(
+          "index.js.get", 
+          "user ID",
+          req.params.id,
+          req
+      ));
+      return res.redirect("/campgrounds");
+  }
+
+  let userSearch = { _id: userId};
+  let updatedUser;
+
+  try {
+    let updateFields = {};
+    updateFields.isRequestedAdmin = (req.params.option) 
+
+    // console.log(updateFields);
+    updatedUser = await User.findOneAndUpdate(userSearch, updateFields);
+
+    if(!updatedUser) {
+      req.flash('error', 'Error updating user for admin request!');
+      return res.redirect('/users/' + req.params.id);
+    }
+
+  } catch (error) {
+      console.log("action :: request admin access UserId " + userId);
+      console.log(middleware.now() + error.message);
+      req.flash('error', error.message);
+  }
+
+  try {
+    let username = req.user.username;
+    let firstName = req.user.firstName;
+    let lastName = req.user.lastName;
+    let userEmail = req.user.email;
+
+    let smtpTransport = await nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+          user: 'gaurav.mendse@gmail.com',
+          pass: process.env.GMAILPW
+      }
+    });
+    let mailOptions = {
+        to: 'gaurav.mendse@icloud.com',
+        from: 'gaurav.mendse@gmail.com',
+        subject: 'User ' + username + ' requested Administrator access!',
+        text: 'Hello Gaurav,\n\n' +
+        'This is a inform that the following user has requested an admin access:\n\n' + 
+        'username: ' + username + '\n\n' +
+        'First Name: ' + firstName + '\n\n' +
+        'Last Name: ' + lastName + '\n\n' +
+        'Email: ' + userEmail + '\n\n' + 
+        "as on " + middleware.now()
+    };
+    await smtpTransport.sendMail(mailOptions);
+
+    req.flash('success', 'You have requested Admin access!');
+  } catch (error) {
+    console.log("action :: request admin access UserId " + userId);
+    console.log(middleware.now() + error.message);
+    req.flash('error', 'Error sending email to admin gaurav.mendse@icloud.com');
+  }
+
+  res.redirect('/users/' + req.params.id);
+});
+
 module.exports = router;
