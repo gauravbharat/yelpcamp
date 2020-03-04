@@ -30,7 +30,7 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
 mongoose.connect(process.env.DATABASEURL, {useNewUrlParser: true, useUnifiedTopology: true}); 
-
+console.log(process.env.DATABASEURL);
 /* body-parser extract the entire body portion of an incoming request stream and exposes it on req. body */
 app.use(bodyParser.urlencoded({extended: true})); 
 app.set("view engine", "ejs"); /* TO DEFAULT VIEW FILES TO .ejs EXTENSION */
