@@ -23,8 +23,8 @@
         <% if(currentUser && currentUser.isAdmin) { %>
             <div class="card mt-2">
                 <div class="card-body pb-0">
-                    <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
-                    <!-- <hr class="bg-primary" style="height: 1px;"> -->
+                    <h5 class="card-title">Admin Controls</h5>
+                    <hr class="bg-primary" style="height: 1px;">
                     <form class="form" id="updateAdminOptionsForm" action="/users/<%= blogUser._id %>?_method=PUT" method="POST">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="isAdmin" id="adminCheck" <%= blogUser.isAdmin ? 'checked' : '' %>>

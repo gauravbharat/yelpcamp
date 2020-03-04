@@ -31,35 +31,34 @@ router.get("/register", function(req, res){
 
 // handle sign up logic
 router.post("/register", (req, res) => {
-  // registerUser(req, res);
-  var registerUser = {
-    username: req.sanitize(req.body.username),
-    firstName: req.sanitize(req.body.firstName),
-    lastName: req.sanitize(req.body.lastName),
-    email: req.sanitize(req.body.email)
-  };
+    // registerUser(req, res);
+    var registerUser = {
+        username: req.sanitize(req.body.username),
+        firstName: req.sanitize(req.body.firstName),
+        lastName: req.sanitize(req.body.lastName),
+        email: req.sanitize(req.body.email)
+    };
 
-  if(req.body.avatar){
-    let avatar = req.body.avatar.trim();
-    if(avatar !== ""){
-        registerUser.avatar = avatar;
-    }    
-  };
-
-  var newUser = new User(registerUser);
-
-  User.register(newUser, req.body.password, function(err, user){
-    if(err || !user){
-        console.log(err);
-        req.flash("error", err.message);
-        return res.redirect("/register");
+    if(req.body.avatar){
+        let avatar = req.body.avatar.trim();
+        if(avatar !== ""){
+            registerUser.avatar = avatar;
+        }    
     }
-    passport.authenticate("local")(req, res, function(){
-      req.flash("success", "Welcome to YelpCamp, " + user.username + "!");
-      res.redirect("/campgrounds");
-      req.session.cookie.expires = false // Gaurav - 02202020 - Remember me
-    });
-  }); 
+
+    var newUser = new User(registerUser);
+
+    User.register(newUser, req.body.password, function(err, user){
+        if(err || !user){
+            console.log(err);
+            req.flash("error", err.message);
+            return res.redirect("/register");
+        }
+        passport.authenticate("local")(req, res, function(){
+            req.flash("success", "Welcome to YelpCamp, " + user.username + "!");
+            res.redirect("/campgrounds");
+        });
+    }); 
 });
 
 // show login form
@@ -96,32 +95,18 @@ router.get("/login", (req, res) => {
 
 // });
 
-// handle sign-in
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', function (err, user, info) {
-    if(err) { return next(err); }
-    if(!user) { return res.redirect('/login'); }
-    
-    // Gaurav - 02202020 - Remember Me changes - start
-    if ( req.body.remember ) {
-      req.session.cookie.originalMaxAge = 24 * 60 * 60 * 1000 // Expires in 1 day
-      // req.session.cookie.originalMaxAge = 30000 // Expires in 30 secs
-    } 
-    else {
-      req.session.cookie.expires = false
-      req.session.maxAge = -1;
-      // req.session.cookie.maxAge =  3600000; //hour
-    }
-    // Gaurav - 02202020 - Remember Me changes - end
-
-    req.logIn(user, function(err){
-      if(err) { return next(err); }
-      var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/campgrounds';
-      delete req.session.redirectTo;
-      req.flash("success", "Welcome to YelpCamp, " + user.username);
-      res.redirect(redirectTo);
-    });
-  })(req, res, next);
+    passport.authenticate('local', function (err, user, info) {
+        if(err) { return next(err); }
+        if(!user) { return res.redirect('/login'); }
+        req.logIn(user, function(err){
+            if(err) { return next(err); }
+            var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/campgrounds';
+            delete req.session.redirectTo;
+            req.flash("success", "Welcome to YelpCamp, " + user.username);
+            res.redirect(redirectTo);
+        });
+    })(req, res, next);
 });
 
 // logout route
