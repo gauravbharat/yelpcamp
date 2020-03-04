@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 var Campground = require("../models/campground");
 var Comment = require("../models/comment");
 var User = require("../models/user");
+var Notification = require("../models/notification");
 
 // all middleware goes here
 var middlewareObj = {};
@@ -187,6 +188,25 @@ middlewareObj.getUsersCount = async (searchObject) => {
   }
 
   return totalCount;
+}
+
+middlewareObj.notifyAdminRequest = async (notificationDataObject) => {
+  // loop through all the admins and update their notifications with
+  // the user details who requested Admin access
+  let admins;
+
+  try {
+    admins = await User.find({"isAdmin": true});
+    for(const admin of admins) {
+      let notification = await Notification.create(notificationDataObject);
+      admin.notifications.push(notification);
+      admin.save();
+    }
+  } catch (error) {
+    console.log(middlewareObj.now() + " Error fetching all users with admin roles in middleware.notifyAdminRequest!");
+    console.log(error.message);
+    return;    
+  }
 }
 
 async function findCampground (searchObject) {

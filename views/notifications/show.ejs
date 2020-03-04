@@ -11,7 +11,12 @@
                     <% notifications.forEach(function(notification){ %>
                         <tr>
                             <td>
-                                <%= notification.username %> created a <a href="/campgrounds/<%= notification.campgroundId %>">new campground </a>
+                                <%= notification.username %>  
+                                <% if(notification.campgroundId) { %>
+                                  created a <a href="/campgrounds/<%= notification.campgroundId %>">new campground </a>
+                                <% } else { %>
+                                  requested <a href="/users/<%= notification.userId %>">admin access</a>
+                                <% } %>
                             </td>
                             <td>
                                 <i class="small"><%= moment(notification.created).fromNow() %></i>

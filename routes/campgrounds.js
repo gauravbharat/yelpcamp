@@ -164,7 +164,7 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), async (req, res)
         /* PERFORMANCE CHECK - Performance may degrade if the current user has thousands or millions of followers. Delegate this process/task (updation of followers) to an entirely different node process to handle it in the background. This process shall update everything in the background and show the user a notification if logged-in. */   
         for(const follower of currentUser.followers) {
             let notification = await Notification.create(newNotification);
-            console.log("notification: " + notification);
+            // console.log("notification: " + notification);
             follower.notifications.push(notification);
             follower.save();
         }

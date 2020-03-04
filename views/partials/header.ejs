@@ -43,7 +43,13 @@
                         <a class="dropdown-item" href="/notifications">View past notifications</a>
                       <% notifications.forEach(function(notification){ %>
                         <% if(!notification.isRead) { %>
-                          <a class="dropdown-item" href="/notifications/<%= notification.id %>"><%= notification.username %> created a new campground</a>
+                          <a class="dropdown-item" href="/notifications/<%= notification.id %>"><%= notification.username %> 
+                            <% if(notification.campgroundId) { %>
+                              created a new campground
+                            <% } else { %>
+                              requested admin access
+                            <% } %>
+                          </a>
                         <% } %>  
                       <% }); %>
                     </ul>

@@ -332,16 +332,18 @@ router.put("/users/:id", middleware.isLoggedIn, async (req, res) => {
 
         try {
             let updateFields = {};
+            
             if(req.body.isAdmin) { 
-                updateFields.isAdmin = true
+                updateFields.isAdmin = true;
+                updateFields.isRequestedAdmin = false;
             } else {
-                updateFields.isAdmin = false
+                updateFields.isAdmin = false;
             }
 
             if(req.body.isPublisher) { 
-                updateFields.isPublisher = true 
+                updateFields.isPublisher = true;
             } else {
-                updateFields.isPublisher = false 
+                updateFields.isPublisher = false;
             }
 
             // console.log(updateFields);
@@ -475,7 +477,11 @@ router.get('/notifications/:id', middleware.isLoggedIn, async (req, res) => {
         }
         foundNotification.isRead = true;
         foundNotification.save();
-        return res.redirect(`/campgrounds/${foundNotification.campgroundId}`);
+        if(foundNotification.campgroundId) {
+          return res.redirect(`/campgrounds/${foundNotification.campgroundId}`);
+        } else {
+          return res.redirect(`/users/${foundNotification.userId}`);
+        }  
     } catch (error) {
         req.flash("error", error.message);
         return res.redirect("back");
@@ -567,6 +573,19 @@ router.get('/reqAdmin/:id/:option', middleware.isLoggedIn, async (req, res) => {
       console.log("action :: request admin access UserId " + userId);
       console.log(middleware.now() + error.message);
       req.flash('error', error.message);
+  }
+
+  try {
+    let newNotification = {
+      username: req.user.username,
+      userId: userId
+    };
+
+    await middleware.notifyAdminRequest(newNotification);
+
+  } catch (error) {
+    console.log("action :: update notifications for admin ");
+    console.log(middleware.now() + error.message);
   }
 
   try {
