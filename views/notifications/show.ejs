@@ -2,8 +2,9 @@
 
 <div class="row justify-content-md-center">
     <div class="col-md-12">
-        <h1 class="text-center">Notifications</h1>
+        <h1 class="text-center">Notifications 
         <% if(notifications) { %>
+          <span class="badge badge-secondary badge-pill"><%= notifications.length %></span></h1>
             <% if(notifications.length > 0) { %>
                 <table class="table">
                     <tbody>
@@ -27,6 +28,7 @@
                     </tbody>    
                 </table>
             <% } else { %>
+            </h1>
                 <hr>
             <% } %>   
 
