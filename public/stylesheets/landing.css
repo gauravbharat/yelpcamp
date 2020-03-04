@@ -13,6 +13,22 @@ body {
     color: #fff;
 }
 
+/* 02042020 - Gaurav - Glow effect to View All Campgrounds button - Start */
+div a.btn-success:hover:before {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px #5cb85c;
+  filter: blur(3px);
+}
+
+div a.btn-success:hover {
+  /* color: #5cb85c; */
+  background-color: #5cce5c;
+  border-color: #5cce5c;
+  box-shadow: 0 0 15px #5cb85c;
+  text-shadow: 0 0 15px #5cb85c;
+}
+/* 02042020 - Gaurav - Glow effect to View All Campgrounds button - End */
+
 .slideshow {
     position: fixed;
     width: 100%;
