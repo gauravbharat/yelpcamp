@@ -8,25 +8,25 @@
       <div class="card bg-primary">
         <div class="card-body text-center">
           <p class="card-text display-1 text-white"><%= totalCount %></p>
-          <p class="card-text text-white">Campgrounds</p>
+          <p class="card-text text-white"><%= (totalCount === 1) ? 'Campground' : 'Campgrounds' %></p>
         </div>
       </div>
       <div class="card bg-success">
         <div class="card-body text-center">
           <p class="card-text display-1 text-white"><%= totalUsers %></p>
-          <p class="card-text text-white">Users</p>
+          <p class="card-text text-white"><%= (totalUsers === 1) ? 'User' : 'Users' %></p>
         </div>
       </div>
       <div class="card bg-warning">
         <div class="card-body text-center">
           <p class="card-text display-1 text-white"><%= totalContributors %></p>
-          <p class="card-text text-white">Contributors</p>
+          <p class="card-text text-white"><%= (totalContributors === 1) ? 'Contributor' : 'Contributors' %></p>
         </div>
       </div>
       <div class="card bg-danger">
         <div class="card-body text-center">
           <p class="card-text display-1 text-white"><%= totalAdmins %></p>
-          <p class="card-text text-white">Admins</p>
+          <p class="card-text text-white"><%= (totalAdmins === 1) ? 'Admin' : 'Admins' %></p>
         </div>
       </div>
     </div>
