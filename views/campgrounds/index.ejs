@@ -40,14 +40,10 @@
       <p>
         <a class="btn btn-primary btn-lg" href="/campgrounds/new">Add New Campground</a>
       </p>
-      <p>
-        <form action="/campgrounds" method="GET" class="form-inline">
-          <div class="form-group">
-            <input type="text" name="search" class="form-control" placeholder="Campground search...">
-            <input type="submit" value="Search" class="btn btn-light ml-sm-2 ml-0 mt-sm-0 mt-2">
-          </div>
-        </form>
-      </p>
+      <form class="form-inline" action="/campgrounds" method="GET">
+        <input class="form-control mr-sm-2" name="search" type="text" placeholder="Campground search..">
+        <button class="btn btn-light" value="Search" type="submit">Search</button>
+      </form>
     </div>    
   </header>
 
