@@ -46,7 +46,7 @@
               <div class="card mt-2">
                 <div class="card-body">
                   <p class="text-muted">Administrator access requested:</p>
-                  <button type="button" class="btn btn-primary btn-block" disabled="true">Requested</button>
+                  <button type="button" class="btn btn-primary btn-block" disabled="true"><span class="spinner-grow spinner-grow-sm"></span>Requested</button>
                 </div>
               </div>
             <% } else { %>
@@ -54,7 +54,7 @@
                 <div class="card-body">
                   <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
                     <p>Request administrator access:</p>
-                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()"><span class="spinner-grow spinner-grow-sm" id="requestSpan" style="display: none;"></span>Request</button>
+                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()"><span class="spinner-border spinner-border-sm" id="requestSpan" style="display: none;"></span>Request</button>
                   </form>
                 </div>
               </div>    
