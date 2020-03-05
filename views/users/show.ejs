@@ -36,7 +36,7 @@
                             <label for="pubCheck" class="form-check-label">Publisher</label>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()">Update</button>
+                            <button id="updateBtn" class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()"><span class="spinner-grow spinner-grow-sm" id="updateSpan" style="display: none;"></span>Update</button>
                         </div>
                     </form>
                 </div>    
@@ -52,9 +52,9 @@
             <% } else { %>
               <div class="card mt-2">
                 <div class="card-body">
-                  <form action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
+                  <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
                     <p>Request administrator access:</p>
-                    <button type="submit" class="btn btn-outline-primary btn-block">Request</button>
+                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()"><span class="spinner-grow spinner-grow-sm" id="requestSpan" style="display: none;"></span>Request</button>
                   </form>
                 </div>
               </div>    
@@ -76,11 +76,23 @@
 
 <script>
     function updateAdminOptions() {
-        document.getElementById("adminCheck").value = document.getElementById("adminCheck").checked;
-        document.getElementById("pubCheck").value = document.getElementById("pubCheck").checked;
-        // trigger form action
-        document.getElementById("updateAdminOptionsForm").submit();
-    }
+      document.getElementById("updateBtn").value = "Updating..";
+      document.getElementById("updateBtn").disabled = true;
+      document.getElementById("updateSpan").style.display = "inline";
+
+      document.getElementById("adminCheck").value = document.getElementById("adminCheck").checked;
+      document.getElementById("pubCheck").value = document.getElementById("pubCheck").checked;
+      // trigger form action
+      document.getElementById("updateAdminOptionsForm").submit();
+    };
+
+    function requestAdminAccess() {
+      document.getElementById("requestBtn").value = "Requesting..";
+      document.getElementById("requestBtn").disabled = true;
+      document.getElementById("requestSpan").style.display = "inline";
+
+      document.getElementById("requestAdminAccessForm").submit();
+    };
 </script>
 
 <%- include("../partials/footer") %>
