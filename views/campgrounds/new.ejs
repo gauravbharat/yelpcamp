@@ -16,15 +16,16 @@
                         <input class="form-control" type="number" id="price" name="campground[price]" placeholder="price in $" min="0.01" step="0.01">
                         <label for="price">Price in $</label>
                     </div> 
-                    <!-- <div class="custom-file mb-3"> 
-                        <input class="custom-file-input" type="file" id="image" name="image" accept="image/*" required>
+                    <!-- 03053030 - Gaurav - Add custom file input -->
+                    <div class="custom-file mb-3"> 
+                        <input class="custom-file-input" type="file" id="image" name="image" accept="image/*" onchange="showFileName(this);" required>
                         <label class="custom-file-label" for="image">Choose file...</label>
                         <div class="invalid-feedback">Select an image to upload!</div>
-                    </div> -->
-                    <div class="form-label-group"> 
+                    </div>
+                    <!-- <div class="form-label-group"> 
                         <input class="form-control-file" type="file" id="image" name="image" accept="image/*" required>
                         <label for="image">Campground image</label>
-                    </div>
+                    </div> -->
                     <div class="form-label-group"> 
                         <input class="form-control"type="text" id="description" name="campground[description]" placeholder="description" required>
                         <label for="description">Description</label>
@@ -43,5 +44,13 @@
         </div>    
     </div>
 <!-- </div>     -->
+
+<!-- 03053030 - Gaurav - Script to show the selected filename on custom input label -->
+<script>
+  function showFileName(obj) {
+    let fileName = obj.value.slice(12); // Remove the wierd C:\fakepath\ prefix
+    document.getElementsByClassName("custom-file-label")[0].innerHTML = fileName;
+  };  
+</script>
 
 <%- include("../partials/footer") %>
