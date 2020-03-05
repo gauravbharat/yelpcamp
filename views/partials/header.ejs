@@ -41,8 +41,11 @@
                     <a href="#" class="nav-link dropdown-toggle" id="notificationDropDown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Notifications <span class="badge badge-light"><%= notifications.length %></span></a>
                     <ul class="dropdown-menu" aria-labelledby="notificationDropDown">
                         <a class="dropdown-item" href="/notifications">View past notifications</a>
-                      <% notifications.forEach(function(notification){ %>
+                      <% notifications.forEach(function(notification, index){ %>
                         <% if(!notification.isRead) { %>
+                          <% if(index === 0) { %>
+                            <div class="dropdown-divider"></div>
+                          <% } %> 
                           <a class="dropdown-item" href="/notifications/<%= notification.id %>"><%= notification.username %> 
                             <% if(notification.campgroundId) { %>
                               created a new campground
