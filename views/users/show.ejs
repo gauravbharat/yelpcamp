@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-md-3 col-sm-6">
         <h2 class="text-center"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
-        <div class="card">
+        <div class="card shadow-sm">
             <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
             <div class="card-body">
                 <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
@@ -22,7 +22,7 @@
         </div> 
         <% if(currentUser) { %>
           <% if(currentUser.isAdmin) { %>
-            <div class="card mt-2">
+            <div class="card mt-2 shadow-sm">
                 <div class="card-body pb-0">
                     <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
                     <!-- <hr class="bg-primary" style="height: 1px;"> -->

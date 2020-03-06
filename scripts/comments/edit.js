@@ -32,7 +32,7 @@ function toggleEdit(p_currentElement, p_campId) {
                 // if Edit button is pressed
                 if(elementName === outerEditButton) {
                     // display form border
-                    document.getElementById(editCommentDivId).className = "border border-warning rounded-sm p-2";
+                    document.getElementById(editCommentDivId).className = "shadow-sm border border-warning rounded-sm p-2";
                     lastComment = document.getElementById(staticParaId).innerHTML;
                     lastCommentId = elementCommentId;
 
