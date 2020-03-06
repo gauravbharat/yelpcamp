@@ -94,7 +94,7 @@ function toggleEdit(p_currentElement, p_campId) {
                     document.getElementById(editCommentDivId).className = "";
 
                     // change the div html to clear the dynamic form elements and show the static paragraph
-                    document.getElementById(editCommentDivId).innerHTML = `<p id="staticPara:`+ elementCommentId +`">` + newComment + `</p>`;    
+                    document.getElementById(editCommentDivId).innerHTML = `<p class="text-justify" id="staticPara:`+ elementCommentId +`">` + newComment + `</p>`;    
 
                     // enable "visible" or authorized edit and delete buttons
                     let allEditButtons = document.getElementsByName("outerEditButton")

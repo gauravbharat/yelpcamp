@@ -164,6 +164,7 @@ async function addComment(req, res) {
         // add username and id to comment
         newComment.author.id = req.user._id;
         newComment.author.username = req.user.username;
+        newComment.author.avatar = req.user.avatar; //03062020 - Gaurav - added avatar to display user image on comments
         // save comment
         newComment.save((err) => {
             if(err) {

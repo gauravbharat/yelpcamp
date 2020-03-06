@@ -65,8 +65,11 @@
                         <div class="row">
                             <% campground.comments.forEach(function(comment){ %>
                                 <div class="col-md-12 mb-2">
-                                    <div class="card">
-                                        <div class="card-body">
+                                    <div class="media border p-3">
+                                      <% if(comment.author.avatar) { %>
+                                        <img src="<%= comment.author.avatar %>" alt="<%= comment.author.username %>" class="mr-3 mt-3 rounded-circle d-inline-block" style="width:60px;">
+                                      <% } %>
+                                        <div class="media-body">
                                             <div>   
                                                 <p class="card-title font-weight-bold">
                                                     <%= comment.author.username %> <span class="small"><i><%= moment(comment.created).fromNow() %> </i></span>
@@ -76,7 +79,7 @@
                                                 </p>
                                             </div>
                                             <div id="editCommentDiv:<%= comment.id %>">
-                                                <p id="staticPara:<%= comment.id %>"><%= comment.text %></p>
+                                                <p class="text-justify" id="staticPara:<%= comment.id %>"><%= comment.text %></p>
                                             </div>
                                             <div class="mt-2">
                                                 <!-- Edit comment button -->
