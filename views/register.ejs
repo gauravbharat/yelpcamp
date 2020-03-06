@@ -27,8 +27,13 @@
             </div>
             <div class="form-label-group">
                 <input class="form-control" type="text" name="avatar" id="avatar" placeholder="Avatar URL">
-                <label for="avatar">Avatar URL</label>
+                <label class="text-nowrap overflow-auto" id="avatarLabel" for="avatar">Avatar URL</label>
             </div>    
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="customCheck" name="avatarCheck" onchange="defaultAvatar(this)">
+              <label class="custom-control-label" for="customCheck">Use default Avatar URL</label>
+            </div>
 
             <button class="btn btn-lg btn-primary btn-block mt-2" type="submit">Sign up</button>
 
@@ -38,4 +43,20 @@
         </form>
     </div>    
 </div>
+
+<script>
+  function defaultAvatar(object) {
+    let avatarInput = document.getElementById("avatar");
+    let avatarLabel = document.getElementById("avatarLabel");
+
+    if(object.checked){
+      avatarInput.disabled = true;
+      avatarInput.value = "";
+      avatarLabel.innerHTML = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD";
+    } else {
+      avatarInput.disabled = false;
+      avatarLabel.innerHTML = "Avatar URL";
+    }  
+  };
+</script>
 <%- include("partials/footer") %>
