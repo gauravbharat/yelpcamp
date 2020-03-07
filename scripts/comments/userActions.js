@@ -1,7 +1,7 @@
 var lastComment = "";
 var lastCommentId = "";
 
-function toggleEdit(p_currentElement, p_campId) {
+async function toggleEdit(p_currentElement, p_campId) {
   const delimiter = ":"; //separator for prefix and respective comment id
   const campgroundId = p_campId;
 
@@ -47,10 +47,10 @@ function toggleEdit(p_currentElement, p_campId) {
             delButton.type = "button"
             delButton.disabled = true;
             delButton.style.cursor = "default";
-          }
+          };
 
           // dynamic form controls to edit comment, submit or cancel
-          document.getElementById(editCommentDivId).innerHTML = 
+          document.getElementById(editCommentDivId).innerHTML = await
           `<form id="edit-comment-form:`+ elementCommentId +`" action="/campgrounds/` + campgroundId + `/comments/` + elementCommentId + `?_method=PUT" method="POST"> ` + 
           `<input id="editCommentInput:` + elementCommentId + `" class="form-control" type="text" name="comment[text]" value="` + lastComment + `" required> ` + 
           `<div class="form-group mb-0 mt-2">
@@ -94,7 +94,7 @@ function toggleEdit(p_currentElement, p_campId) {
           document.getElementById(editCommentDivId).className = "";
 
           // change the div html to clear the dynamic form elements and show the static paragraph
-          document.getElementById(editCommentDivId).innerHTML = `<p class="text-justify" id="staticPara:`+ elementCommentId +`">` + newComment + `</p>`;    
+          document.getElementById(editCommentDivId).innerHTML = await `<p class="text-justify" id="staticPara:`+ elementCommentId +`">` + newComment + `</p>`;    
 
           // enable "visible" or authorized edit and delete buttons
           let allEditButtons = document.getElementsByName("outerEditButton")
@@ -107,7 +107,7 @@ function toggleEdit(p_currentElement, p_campId) {
             delButton.disabled = false;
             delButton.type = "submit"
             delButton.style.cursor = "pointer";
-          }
+          };
         }
       } //delPos > 0
     } // elementId && elementId.length > 0
@@ -115,9 +115,9 @@ function toggleEdit(p_currentElement, p_campId) {
 };
 
 // 03072020 - Gaurav - Show comment author info in a modal window
-function showModal(p_currentObject, p_currentAuthorId) {
+async function showModal(p_currentObject, p_currentAuthorId) {
   let modalWindow = document.getElementById("showCommentAuthorInfo");
-  modalWindow.innerHTML = `
+  let innerHTML = `
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
@@ -130,5 +130,8 @@ function showModal(p_currentObject, p_currentAuthorId) {
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
       </div>
     </div>
-  </div>`
+  </div>`;
+
+  modalWindow.innerHTML = await innerHTML;
+
 };
