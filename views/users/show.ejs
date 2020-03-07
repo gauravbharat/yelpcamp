@@ -4,42 +4,45 @@
     <div class="col-md-3 col-sm-6">
         <h2 class="text-center font-weight-bold"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
         <div class="card shadow-sm">
+          <div class="imagehandler">
             <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
-            <div class="card-body">
-                <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
-                <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
-                    <% if(isFollowing) { %>
-                        <form action="/unfollow/<%= blogUser._id %>" method="GET">
-                            <button class="btn btn-primary btn-block">Following</button>
-                        </form>    
-                    <% } else { %>
-                        <form action="/follow/<%= blogUser._id %>" method="GET">
-                            <button class="btn btn-outline-primary btn-block">Follow</button>
-                        </form>
-                    <% } %>
-                <% } %>
-            </div>    
+            <a class="topright" href="#" data-toggle="modal" data-target="#showImageChange"><i class="fa fa-camera"></i></a>
+          </div>  
+          <div class="card-body">
+              <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
+              <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
+                  <% if(isFollowing) { %>
+                      <form action="/unfollow/<%= blogUser._id %>" method="GET">
+                          <button class="btn btn-primary btn-block">Following</button>
+                      </form>    
+                  <% } else { %>
+                      <form action="/follow/<%= blogUser._id %>" method="GET">
+                          <button class="btn btn-outline-primary btn-block">Follow</button>
+                      </form>
+                  <% } %>
+              <% } %>
+          </div>    
         </div> 
         <% if(currentUser) { %>
           <% if(currentUser.isAdmin) { %>
             <div class="card mt-2 shadow-sm">
-                <div class="card-body pb-0">
-                    <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
-                    <!-- <hr class="bg-primary" style="height: 1px;"> -->
-                    <form class="form" id="updateAdminOptionsForm" action="/users/<%= blogUser._id %>?_method=PUT" method="POST">
-                        <div class="custom-control custom-switch">
-                            <input class="custom-control-input" type="checkbox" name="isAdmin" id="adminCheck" <%= blogUser.isAdmin ? 'checked' : '' %>>
-                            <label for="adminCheck" class="custom-control-label">Administrator</label>
-                        </div>
-                        <div class="custom-control custom-switch">
-                            <input class="custom-control-input" type="checkbox" name="isPublisher" id="pubCheck" <%= blogUser.isPublisher ? 'checked' : '' %>>
-                            <label for="pubCheck" class="custom-control-label">Publisher</label>
-                        </div>
-                        <div class="form-group">
-                            <button id="updateBtn" class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()"><span class="spinner-grow spinner-grow-sm" id="updateSpan" style="display: none;"></span>Update</button>
-                        </div>
-                    </form>
-                </div>    
+              <div class="card-body pb-0">
+                <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
+                <!-- <hr class="bg-primary" style="height: 1px;"> -->
+                <form class="form" id="updateAdminOptionsForm" action="/users/<%= blogUser._id %>/admin?_method=PUT" method="POST">
+                  <div class="custom-control custom-switch">
+                    <input class="custom-control-input" type="checkbox" name="isAdmin" id="adminCheck" <%= blogUser.isAdmin ? 'checked' : '' %>>
+                    <label for="adminCheck" class="custom-control-label">Administrator</label>
+                  </div>
+                  <div class="custom-control custom-switch">
+                    <input class="custom-control-input" type="checkbox" name="isPublisher" id="pubCheck" <%= blogUser.isPublisher ? 'checked' : '' %>>
+                    <label for="pubCheck" class="custom-control-label">Publisher</label>
+                  </div>
+                  <div class="form-group">
+                    <button id="updateBtn" class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()"><span class="spinner-grow spinner-grow-sm" id="updateSpan" style="display: none;"></span>Update</button>
+                  </div>
+                </form>
+              </div>    
             </div> 
           <% } else { %>
             <% if(currentUser.isRequestedAdmin) { %>
@@ -54,7 +57,7 @@
                 <div class="card-body">
                   <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
                     <p>Request administrator access:</p>
-                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()"><span class="spinner-border spinner-border-sm" id="requestSpan" style="display: none;"></span>Request</button>
+                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()">Request</button>
                   </form>
                 </div>
               </div>    
@@ -63,36 +66,82 @@
         <% } %>   
     </div>
     <div class="col-md-9 mt-2">
-        <% if(campgrounds) { %>
-            <h3><strong><%= blogUser.username %>'s</strong> campgrounds:</h3>
-            <ul>
-                <% campgrounds.forEach(function(campground){ %>
-                    <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
-                <% }); %>
-            </ul>    
-        <% } %>    
+      <% if(campgrounds) { %>
+        <h3><strong><%= blogUser.username %>'s</strong> campgrounds:</h3>
+        <ul>
+          <% campgrounds.forEach(function(campground){ %>
+              <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
+          <% }); %>
+        </ul>    
+      <% } %>    
     </div>
 </div>
 
+<div class="modal" id="showImageChange">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Change Avatar URL</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form class="form-group" action="/users/<%= blogUser._id %>/avatar?_method=PUT" method="POST">
+          <div class="form-label-group">
+            <input class="form-control" type="text" name="avatar" id="avatar" placeholder="Avatar URL">
+            <label class="text-nowrap overflow-auto" id="avatarLabel" for="avatar">Avatar URL</label>
+          </div>    
+
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="customCheck" name="avatarCheck" onchange="defaultAvatar(this)">
+            <label class="custom-control-label" for="customCheck">Use default Avatar URL</label>
+          </div> 
+          <div class="mt-3"> 
+            <button class="btn btn-outline-warning" type="submit">Update</button>
+            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
+          </div>  
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 <script>
-    function updateAdminOptions() {
-      document.getElementById("updateBtn").value = "Updating..";
-      document.getElementById("updateBtn").disabled = true;
-      document.getElementById("updateSpan").style.display = "inline";
+  function updateAdminOptions() {
+    document.getElementById("updateBtn").value = "Updating..";
+    document.getElementById("updateBtn").disabled = true;
+    document.getElementById("updateSpan").style.display = "inline";
 
-      document.getElementById("adminCheck").value = document.getElementById("adminCheck").checked;
-      document.getElementById("pubCheck").value = document.getElementById("pubCheck").checked;
-      // trigger form action
-      document.getElementById("updateAdminOptionsForm").submit();
-    };
+    document.getElementById("adminCheck").value = document.getElementById("adminCheck").checked;
+    document.getElementById("pubCheck").value = document.getElementById("pubCheck").checked;
+    // trigger form action
+    document.getElementById("updateAdminOptionsForm").submit();
+  };
 
-    function requestAdminAccess() {
-      document.getElementById("requestBtn").value = "Requesting..";
-      document.getElementById("requestBtn").disabled = true;
-      document.getElementById("requestSpan").style.display = "inline";
+  function requestAdminAccess() {
+    document.getElementById("requestBtn").value = "Requesting..";
+    document.getElementById("requestBtn").disabled = true;
 
-      document.getElementById("requestAdminAccessForm").submit();
-    };
+    document.getElementById("requestAdminAccessForm").submit();
+  };
+
+  function defaultAvatar(object) {
+    let avatarInput = document.getElementById("avatar");
+    let avatarLabel = document.getElementById("avatarLabel");
+
+    if(object.checked){
+      avatarInput.disabled = true;
+      avatarInput.value = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD";
+      // avatarLabel.innerHTML = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD";
+    } else {
+      avatarInput.disabled = false;
+      // avatarLabel.innerHTML = "Avatar URL";
+    }  
+  };
 </script>
 
 <%- include("../partials/footer") %>

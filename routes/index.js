@@ -9,6 +9,7 @@ var crypto = require("crypto");
 
 var User = require("../models/user");
 var Campground = require("../models/campground");
+var Comment = require("../models/comment");
 var Notification = require("../models/notification");
 const fileName = "index.js";
 
@@ -318,7 +319,7 @@ router.get("/users/:id/:window", middleware.isLoggedIn, async (req, res) => {
 });
 
 // update Admin options for user
-router.put("/users/:id", middleware.isLoggedIn, async (req, res) => {
+router.put("/users/:id/admin", middleware.isLoggedIn, async (req, res) => {
     let userId;
     let foundUser;
 
@@ -370,6 +371,51 @@ router.put("/users/:id", middleware.isLoggedIn, async (req, res) => {
     }    
     return res.redirect("/users/" + req.params.id);
 });
+
+/* 03072020 - Gaurav - Option to change user Avatar URL */
+router.put("/users/:id/avatar", middleware.isLoggedIn, async (req, res) => {
+  let userId;
+  let foundUser;
+
+  if(req.body) {
+      if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+          userId = await mongoose.Types.ObjectId(req.params.id);
+      } else {
+          req.flash("error", "User ID is invalid!");
+          console.log("* " + middleware.getLogStr(
+              "index.js.put", 
+              "user ID",
+              req.params.id,
+              req
+          ));
+          return res.redirect("/campgrounds");
+      }
+
+      try {
+          let avatar;
+
+          if(!req.body.avatar) {
+            avatar = '';
+          } else {
+            avatar = req.body.avatar.trim();
+          }
+
+          if(avatar === '') {
+            avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD";
+          }
+
+          let updatedUser = await User.findOneAndUpdate({ _id: userId}, {avatar: avatar});
+          let updatedComments = await Comment.updateMany({ "author.id": userId }, { "author.avatar": avatar });
+
+      } catch (error) {
+          req.flash("error", "Error updating Avatar! " + error.message );
+          console.log("Error updating Avatar: " + error.message);
+          return res.redirect("back");
+      }
+  }    
+  return res.redirect("/users/" + req.params.id);
+});
+/* 03072020 - Gaurav - Option to change user Avatar URL - End */
 
 // follow user
 router.get('/follow/:id', middleware.isLoggedIn, async (req, res) => {
