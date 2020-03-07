@@ -118,7 +118,7 @@ async function toggleEdit(p_currentElement, p_campId) {
 async function showModal(p_currentObject, p_currentAuthorId) {
   let modalWindow = document.getElementById("showCommentAuthorInfo");
   let innerHTML = `
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
