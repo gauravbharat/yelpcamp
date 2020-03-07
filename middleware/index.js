@@ -140,12 +140,25 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
 // before rendering campgrounds page, check whether the user is logged in
 // call this function as a middleware in the get call to campgrounds
 middlewareObj.isLoggedIn = (req, res, next) => {
-    if(req.isAuthenticated()){
-        return next();
-    }
-    req.session.redirectTo = req.originalUrl;
-    req.flash("error", "You need to be logged in to do that!");
-    res.redirect("/login");
+  if(req.isAuthenticated()){
+      return next();
+  }
+
+  req.session.redirectTo = req.originalUrl;
+  
+  // 03072020 - Gaurav - Redirect to the user show page instead of the modal window,
+  // if that is what the last option that user had clicked on.
+  if(req.originalUrl) {
+    let pos = req.originalUrl.indexOf('/inCampComModal');
+    if(pos > 0) {
+      // Remove the '/inCampComModal' suffix
+      req.session.redirectTo = req.originalUrl.slice(0, pos);
+    }  
+  }
+  // 03072020 - Gaurav - End
+
+  req.flash("error", "You need to be logged in to do that!");
+  res.redirect("/login");
 };
 
 middlewareObj.now = () => {

@@ -251,8 +251,12 @@ router.post('/reset/:token', (req, res) => {
     });
 });
 
-// USER PROFILE
-router.get("/users/:id", middleware.isLoggedIn, async (req, res) => {
+// USER PROFILE - default
+router.get("/users/:id", middleware.isLoggedIn, (req, res) => {
+  res.redirect(`/users/${req.params.id}/modeless-xiKAF7m2PonmHIOv8cootxC0KQ=`);
+});
+
+router.get("/users/:id/:window", middleware.isLoggedIn, async (req, res) => {
     let userId;
     let foundUser;
     let foundCampgrounds;
@@ -306,7 +310,11 @@ router.get("/users/:id", middleware.isLoggedIn, async (req, res) => {
         req.flash("error", error.message);
     }
 
-    res.render("users/show", { blogUser: foundUser, campgrounds: foundCampgrounds }); 
+    if(req.params.window === 'inCampComModal') {
+      res.render("users/showmodal", { blogUser: foundUser, campgrounds: foundCampgrounds });
+    } else {
+      res.render("users/show", { blogUser: foundUser, campgrounds: foundCampgrounds }); 
+    }  
 });
 
 // update Admin options for user
