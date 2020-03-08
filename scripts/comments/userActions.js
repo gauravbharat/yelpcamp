@@ -120,7 +120,7 @@ async function showModal(p_currentObject, p_currentAuthorId) {
   let innerHTML = `
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-body">
+      <div class="modal-body" style="overflow-y: auto;">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <div class="embed-responsive embed-responsive-1by1">
           <iframe class="embed-responsive-item" src="/users/` + p_currentAuthorId + `/inCampComModal"></iframe>
