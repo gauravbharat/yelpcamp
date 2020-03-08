@@ -122,9 +122,7 @@ async function showModal(p_currentObject, p_currentAuthorId) {
     <div class="modal-content">
       <div class="modal-body" style="overflow-y: auto;">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        
-          <iframe class="embed-responsive-item" style="overflow: auto;" src="/users/` + p_currentAuthorId + `/inCampComModal"></iframe>
-
+          <iframe class="embed-responsive-item" style="overflow-y: auto; border:none;" src="/users/` + p_currentAuthorId + `/inCampComModal"></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
