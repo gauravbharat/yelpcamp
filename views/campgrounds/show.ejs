@@ -73,7 +73,7 @@
                             <div>   
                               <p class="card-title font-weight-bold">
                                 <% if(currentUser) { %>
-                                  <a onclick="showModal(this, '<%= comment.author.id %>')" href="#" data-toggle="modal" data-target="#showCommentAuthorInfo" data-backdrop="static"><%= comment.author.username %></a>
+                                  <a onclick="showModal(this, '<%= comment.author.id %>')" href="#" data-toggle="modal" data-target="#showCommentAuthorInfo" data-backdrop="static" data-show="false"><%= comment.author.username %></a>
                                 <% } else { %>
                                   <%= comment.author.username %>  
                                 <% } %>
