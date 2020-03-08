@@ -1,83 +1,125 @@
 <%- include("../partials/header") %>
 
 <div class="row">
-    <div class="col-md-3 col-sm-6">
-        <h2 class="text-center font-weight-bold"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
-        <div class="card shadow-sm">
-          <div class="imagehandler">
-            <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
-            <a class="topright" href="#" data-toggle="modal" data-target="#showImageChange"><i class="fa fa-camera"></i></a>
-          </div>  
-          <div class="card-body">
-              <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
-              <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
-                  <% if(isFollowing) { %>
-                      <form action="/unfollow/<%= blogUser._id %>" method="GET">
-                          <button class="btn btn-primary btn-block">Following</button>
-                      </form>    
-                  <% } else { %>
-                      <form action="/follow/<%= blogUser._id %>" method="GET">
-                          <button class="btn btn-outline-primary btn-block">Follow</button>
-                      </form>
-                  <% } %>
-              <% } %>
-          </div>    
-        </div> 
-        <% if(currentUser) { %>
-          <% if(currentUser.isAdmin) { %>
-            <div class="card mt-2 shadow-sm">
-              <div class="card-body pb-0">
-                <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
-                <!-- <hr class="bg-primary" style="height: 1px;"> -->
-                <form class="form" id="updateAdminOptionsForm" action="/users/<%= blogUser._id %>/admin?_method=PUT" method="POST">
-                  <div class="custom-control custom-switch">
-                    <input class="custom-control-input" type="checkbox" name="isAdmin" id="adminCheck" <%= blogUser.isAdmin ? 'checked' : '' %>>
-                    <label for="adminCheck" class="custom-control-label">Administrator</label>
-                  </div>
-                  <div class="custom-control custom-switch">
-                    <input class="custom-control-input" type="checkbox" name="isPublisher" id="pubCheck" <%= blogUser.isPublisher ? 'checked' : '' %>>
-                    <label for="pubCheck" class="custom-control-label">Publisher</label>
-                  </div>
-                  <div class="form-group">
-                    <button id="updateBtn" class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()"><span class="spinner-grow spinner-grow-sm" id="updateSpan" style="display: none;"></span>Update</button>
-                  </div>
-                </form>
-              </div>    
-            </div> 
+  <div class="col-md-3 col-sm-6">
+    <h2 class="text-center font-weight-bold"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
+    <div class="card shadow-sm">
+      <div class="imagehandler">
+        <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
+        <a class="topright" href="#" data-toggle="modal" data-target="#showImageChange" data-backdrop="static"><i class="fa fa-camera"></i></a>
+      </div>  
+      <div class="card-body">
+        <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
+          <div class="card-text"><a href="mailto:<%= blogUser.email %>"><%= blogUser.email %></a></div>
+          <% if(isFollowing) { %>
+            <form action="/unfollow/<%= blogUser._id %>" method="GET">
+                <button class="btn btn-primary btn-block">Following</button>
+            </form>    
           <% } else { %>
-            <% if(currentUser.isRequestedAdmin) { %>
-              <div class="card mt-2">
-                <div class="card-body">
-                  <p class="text-muted">Administrator access requested:</p>
-                  <button type="button" class="btn btn-primary btn-block" disabled="true"><span class="spinner-grow spinner-grow-sm"></span>Requested</button>
+              <form action="/follow/<%= blogUser._id %>" method="GET">
+                  <button class="btn btn-outline-primary btn-block">Follow</button>
+              </form>
+          <% } %>
+        <% } %>
+      </div>    
+      </div> 
+      <% if(currentUser) { %>
+        <% if(currentUser.isAdmin) { %>
+          <div class="card mt-2 shadow-sm">
+            <div class="card-body pb-0">
+              <h5 class="card-title border-bottom border-primary">Admin Controls</h5>
+              <!-- <hr class="bg-primary" style="height: 1px;"> -->
+              <form class="form" id="updateAdminOptionsForm" action="/users/<%= blogUser._id %>/admin?_method=PUT" method="POST">
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" name="isAdmin" id="adminCheck" <%= blogUser.isAdmin ? 'checked' : '' %>>
+                  <label for="adminCheck" class="custom-control-label">Administrator</label>
                 </div>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" name="isPublisher" id="pubCheck" <%= blogUser.isPublisher ? 'checked' : '' %>>
+                  <label for="pubCheck" class="custom-control-label">Publisher</label>
+                </div>
+                <div class="form-group">
+                  <button id="updateBtn" class="btn btn-outline-primary btn-block mt-2" type="button" onclick="updateAdminOptions()"><span class="spinner-grow spinner-grow-sm" id="updateSpan" style="display: none;"></span>Update</button>
+                </div>
+              </form>
+            </div>    
+          </div> 
+        <% } else { %>
+          <% if(currentUser.isRequestedAdmin) { %>
+            <div class="card mt-2">
+              <div class="card-body">
+                <p class="text-muted">Administrator access requested:</p>
+                <button type="button" class="btn btn-primary btn-block" disabled="true"><span class="spinner-grow spinner-grow-sm"></span>Requested</button>
               </div>
-            <% } else { %>
-              <div class="card mt-2">
-                <div class="card-body">
-                  <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
-                    <p>Request administrator access:</p>
-                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()">Request</button>
-                  </form>
-                </div>
-              </div>    
-            <% } %>
-          <% } %>       
-        <% } %>   
-    </div>
-    <div class="col-md-9 mt-2">
-      <% if(campgrounds) { %>
-        <h3><strong><%= blogUser.username %>'s</strong> campgrounds:</h3>
-        <ul>
-          <% campgrounds.forEach(function(campground){ %>
+            </div>
+          <% } else { %>
+            <div class="card mt-2">
+              <div class="card-body">
+                <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
+                  <p>Request administrator access:</p>
+                  <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()">Request</button>
+                </form>
+              </div>
+            </div>    
+          <% } %>
+        <% } %>       
+      <% } %>   
+  </div>
+  <div class="col-md-9 mt-2">
+    <% if(currentUser && (currentUser._id.equals(blogUser._id))) { %> 
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#userCampgrounds">My campgrounds:</a>
+        </li>  
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#userInfo">My information:</a>
+        </li>
+      </ul>
+    <% } else { %>
+      <h3><strong><%= blogUser.username %>'s</strong> campgrounds:</h3>
+    <% } %> 
+    <% if(currentUser && (currentUser._id.equals(blogUser._id))) { %>     
+      <div class="tab-content mt-1">
+        <div id="userCampgrounds" class="container tab-pane fade">
+    <% } %>    
+        <% if(campgrounds) { %>
+          <ul>
+            <% campgrounds.forEach(function(campground){ %>
               <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
-          <% }); %>
-        </ul>    
-      <% } %>    
+            <% }); %>
+          </ul>
+        <% } %> 
+    <% if(currentUser && (currentUser._id.equals(blogUser._id))) { %>   
+      </div>
+      <div id="userInfo" class="container tab-pane active mt-2">
+        <form class="form" id="updateUserInfoForm" action="/users/<%= blogUser._id %>/userinfo?_method=PUT" method="POST">
+          <div class="form-label-group">
+            <input type="text" name="username" class="form-control" value="<%= blogUser.username %>" disabled>
+            <label for="username">@username</label>
+          </div>  
+          <div class="form-label-group">
+            <input class="form-control" type="text" name="firstName" value="<%= blogUser.firstName %>">
+            <label for="firstName">First Name</label>
+          </div>
+          <div class="form-label-group">
+              <input class="form-control" type="text" name="lastName" value="<%= blogUser.lastName %>">
+              <label for="lastName">Last Name</label>
+          </div>
+          <div class="form-label-group">
+              <input class="form-control" type="email" name="email" value="<%= blogUser.email %>" required>
+              <label for="email">e-mail*</label>
+              <p class="small text-muted text-justify font-italic">*Enter a valid e-mail ID to help you recover your password, just in case.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-block mt-2" type="submit">Update</button> 
+        </form>
+        <button class="btn btn-outline-primary btn-block my-2" type="button" disabled>Change Password</button> 
+      </div>
     </div>
+    <% } %>
+  </div>
 </div>
 
-<div class="modal" id="showImageChange">
+<div class="modal fade" id="showImageChange">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
     
@@ -105,7 +147,6 @@
           </div>  
         </form>
       </div>
-      
     </div>
   </div>
 </div>

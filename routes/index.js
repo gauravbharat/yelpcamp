@@ -417,6 +417,60 @@ router.put("/users/:id/avatar", middleware.isLoggedIn, async (req, res) => {
 });
 /* 03072020 - Gaurav - Option to change user Avatar URL - End */
 
+/* 03092020 - Gaurav - Option to change user information (firstname, lastname and email) */
+router.put("/users/:id/userinfo", middleware.isLoggedIn, async (req, res) => {
+  let userId;
+
+  if(req.body) {
+      if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+          userId = await mongoose.Types.ObjectId(req.params.id);
+      } else {
+          req.flash("error", "User ID is invalid!");
+          console.log("* " + middleware.getLogStr(
+              "index.js.put", 
+              "user ID",
+              req.params.id,
+              req
+          ));
+          return res.redirect("/campgrounds");
+      }
+
+      let userSearch = { _id: userId};
+
+      try {
+          let updateFields = {};
+
+          // Values fields are populated for these fields. So, default values
+          // are expected to come back unless specifically cleared out
+          if(req.body.firstName) { 
+            updateFields.firstName = req.body.firstName.trim();
+          } else {
+            updateFields.firstName = '';
+          }
+
+          if(req.body.lastName) { 
+            updateFields.lastName = req.body.lastName.trim();
+          } else {
+            updateFields.lastName = '';
+          }
+
+          // Required field on the UI
+          if(req.body.email) { 
+            updateFields.email = req.body.email.trim();
+          }
+
+          let updatedUser= await User.findOneAndUpdate(userSearch, updateFields);
+      } catch (error) {
+          req.flash("error", "Error updating user information! " + error.message );
+          return res.redirect("back");
+      }
+
+      req.flash("success", "User information updated.");
+  }    
+  return res.redirect("/users/" + req.params.id);
+});
+/* 03092020 - Gaurav - Option to change user information (firstname, lastname and email) - End */
+
 // follow user
 router.get('/follow/:id', middleware.isLoggedIn, async (req, res) => {
     let userId;
