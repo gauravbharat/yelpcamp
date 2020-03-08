@@ -114,14 +114,14 @@
 <!-- Issue with chrome and safari browsers on iOS where the modal-body won't display in full and 
   the content would be cut in half -->
 <style>
-  .modal { 
+  .modal .modal-body .embed-responsive-item { 
     -webkit-overflow-scrolling: auto; 
   }
 
   .modal-open {
     overflow: hidden;
   }
-  
+
   .modal {
     overflow-y: auto;
   }
