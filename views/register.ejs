@@ -1,8 +1,8 @@
 <%- include("partials/header") %>
 
-<div class="row">
-    <div class="col-md-12">
-        <form class="form-signin" action="/register" method="POST">
+<div class="row justify-content-center overflow-auto">
+    <div class="col-md-8">
+        <form class="form" action="/register" method="POST">
 
             <h1 class="h3 mb-3 font-weight-normal text-center">Sign Up</h1>
             <div class="form-label-group">
@@ -23,7 +23,8 @@
             </div>
             <div class="form-label-group">
                 <input class="form-control" type="email" name="email" id="email" placeholder="e-mail" required>
-                <label for="email">e-mail</label>
+                <label for="email">e-mail*</label>
+                <p class="small text-muted text-justify font-italic">*Enter a valid e-mail ID to help you recover your password, just in case.</p>
             </div>
             <div class="form-label-group">
                 <input class="form-control" type="text" name="avatar" id="avatar" placeholder="Avatar URL">

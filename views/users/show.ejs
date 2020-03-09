@@ -112,7 +112,7 @@
           </div>
           <button class="btn btn-outline-primary btn-block mt-2" type="submit">Update</button> 
         </form>
-        <button class="btn btn-outline-primary btn-block my-2" type="button" disabled>Change Password</button> 
+        <button class="btn btn-outline-primary btn-block my-2" type="button" data-toggle="modal" data-target="#showPasswordChange" data-backdrop="static">Change Password</button> 
       </div>
     </div>
     <% } %>
@@ -151,6 +151,47 @@
   </div>
 </div>
 
+<div class="modal fade" id="showPasswordChange">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Change Password</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div id="userAlertDiv"></div> <!-- Placeholder for dynamic UI validation alerts -->
+        <form class="form-group" id="formPwdChange" action="/users/<%= blogUser._id %>/pwdChange?_method=PUT" method="POST">
+          <div class="form-label-group"> 
+            <input type="password" name="oldpassword" id="oldPassword" class="form-control" placeholder="Enter old password" required>
+            <label for="password">Enter old password</label>
+          </div>   
+          <hr class="border border-secondary" />
+          <div class="input-group mb-3">
+            <input type="password" name="newpassword" id="newPassword" class="form-control" placeholder="Enter new password" required>
+            <div class="input-group-append">
+              <span class="input-group-text bg-light" id="newPasswordEye" ontouchstart="mouseDown(this)" ontouchend="mouseUp(this)" onmousedown="mouseDown(this)" onmouseup="mouseUp(this)"><i class="fa fa-eye"></i></span>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" id="newPasswordReEnter" class="form-control" placeholder="Enter new password again" required>
+            <div class="input-group-append">
+              <span class="input-group-text bg-light" id="newPasswordREye" ontouchstart="mouseDown(this)" ontouchend="mouseUp(this)" onmousedown="mouseDown(this)" onmouseup="mouseUp(this)"><i class="fa fa-eye"></i></span>
+            </div>
+          </div>
+          <div class="mt-3"> 
+            <button class="btn btn-outline-warning" id='formPwdChangeSubmit' type="button" onclick="passwordSubmit()">Update</button>
+            <button type="reset" onclick="resetForm(this)" id="formPwdChangeReset" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
+          </div>  
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   function updateAdminOptions() {
     document.getElementById("updateBtn").value = "Updating..";
@@ -182,6 +223,117 @@
       avatarInput.disabled = false;
       // avatarLabel.innerHTML = "Avatar URL";
     }  
+  };
+
+  function mouseUp(object) {
+    if(object.id === 'newPasswordEye') {
+      document.getElementById('newPassword').type = 'password';
+    };
+    if(object.id === 'newPasswordREye') {
+      document.getElementById('newPasswordReEnter').type = 'password';
+    };
+  };
+
+  function mouseDown(object) {
+    if(object.id === 'newPasswordEye') {
+      document.getElementById('newPassword').type = 'text';
+    };
+    if(object.id === 'newPasswordREye') {
+      document.getElementById('newPasswordReEnter').type = 'text';
+    };
+  };
+
+  function resetForm(object) {
+    if(object.id === 'formPwdChangeReset') {
+      let userAlertDiv = document.getElementById('userAlertDiv');
+      let userAlertPwdWin = document.getElementById('userAlertPwdWin');
+      if(userAlertPwdWin) {
+        userAlertDiv.removeChild(userAlertPwdWin);
+      }
+      document.getElementById('formPwdChange').reset();
+    }
+  };
+
+  function createDiv( p_id, p_className, p_innerHTML, p_parentObj ) {
+    let userAlertPwdDiv = document.createElement("DIV");
+    userAlertPwdDiv.id = p_id;
+    userAlertPwdDiv.className = p_className;
+    userAlertPwdDiv.innerHTML = p_innerHTML;
+    p_parentObj.appendChild(userAlertPwdDiv);
+  };
+
+  function passwordSubmit() {
+    let oldPassword = document.getElementById('oldPassword');
+    let newPassword = document.getElementById('newPassword');
+    let newPasswordReentered = document.getElementById('newPasswordReEnter');
+    
+    let userAlertDiv = document.getElementById('userAlertDiv');
+    let userAlertPwdWin = document.getElementById('userAlertPwdWin');
+    let userAlertPwdDivId = 'userAlertPwdWin';
+    let userAlertPwdDivClassName = 'alert alert-danger alert-dismissible fade show';
+    let dynamicInnerHTML; //leave unassinged
+    let focusObj; //leave unassigned
+
+    /* Old password field UI validation */
+    if(oldPassword.value.trim() === '') {
+      let innerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Warning!</strong> Old password cannot be blank.`;
+
+      if(userAlertPwdWin) {
+        userAlertPwdWin.innerHTML = innerHTML;  
+      } else {
+        createDiv(
+            userAlertPwdDivId
+          , userAlertPwdDivClassName
+          , innerHTML
+          , userAlertDiv  
+        );
+      }
+      oldPassword.focus();
+      return;
+    }
+
+    /* New password field UI validation */
+    if (newPassword.value !== newPasswordReentered.value) {
+      dynamicInnerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Warning!</strong> New password fields does not match.`;
+      focusObj = newPassword;      
+    }
+
+    if(newPassword.value.trim() === '') {
+      dynamicInnerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Warning!</strong> New password cannot be blank.`;
+      focusObj = newPassword; 
+    } else {
+      if(newPasswordReentered.value.trim() === '') {
+        dynamicInnerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Warning!</strong> Reenter new password.`;
+        focusObj = newPasswordReentered; 
+      }
+    }
+
+    if(dynamicInnerHTML && dynamicInnerHTML.length > 0) {
+      if(userAlertPwdWin) {
+        userAlertPwdWin.innerHTML = dynamicInnerHTML;  
+      } else {
+        createDiv(
+            userAlertPwdDivId
+          , userAlertPwdDivClassName
+          , dynamicInnerHTML
+          , userAlertDiv  
+        );
+      }
+      focusObj.focus();
+      return;
+    }
+
+    // User reached till here means there are no failed UI validations so far
+    if(userAlertPwdWin) {
+      userAlertDiv.removeChild(userAlertPwdWin);
+    }
+
+    let form = document.getElementById('formPwdChange');
+    form.submit();
   };
 </script>
 

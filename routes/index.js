@@ -117,9 +117,9 @@ router.post('/login', (req, res, next) => {
 
 // logout route
 router.get("/logout", (req, res) => {
-    req.logOut();
-    req.flash("success", "Logged you out!");
-    res.redirect("/campgrounds");
+  req.logOut();
+  req.flash("success", "Logged you out!");
+  res.redirect("/campgrounds");
 });
 
 // forgot password
@@ -470,6 +470,68 @@ router.put("/users/:id/userinfo", middleware.isLoggedIn, async (req, res) => {
   return res.redirect("/users/" + req.params.id);
 });
 /* 03092020 - Gaurav - Option to change user information (firstname, lastname and email) - End */
+
+/* 03102020 - Gaurav - Option to change current password */
+router.put("/users/:id/pwdChange", middleware.isLoggedIn, async (req, res) => {
+  let userId;
+
+  if(req.body) {
+      if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+          userId = await mongoose.Types.ObjectId(req.params.id);
+      } else {
+          req.flash("error", "User ID is invalid!");
+          console.log("* " + middleware.getLogStr(
+              "index.js.put", 
+              "user ID",
+              req.params.id,
+              req
+          ));
+          return res.redirect("/campgrounds");
+      }
+
+      let userSearch = { _id: userId};
+
+      try {
+          let updateFields = {};
+
+          // verify user's old password is correct
+          let currentUser = await User.authenticate()(req.user.username, req.body.oldpassword);
+
+          // if(JSON.stringify(currentUser.user) === 'false') {
+          if(currentUser.error) {  
+            req.flash("error", 'Old password was incorrect. Try changing password again with the correct current password.');
+
+            return res.redirect("back");
+          }
+          
+          //get user db document handle
+          let user = await User.findOne(userSearch);
+          
+          if(!user) {
+            req.flash('error', 'Error fetching user information from the database!');
+            return res.redirect("back");
+          }
+
+          // change password
+          let changePwd = await user.changePassword(req.body.oldpassword, req.body.newpassword);
+
+          if(changePwd.error) {
+            req.flash('error', 'Error updating new password!');
+            return res.redirect("back");
+          }
+      } catch (error) {
+          req.flash("error", "Error updating password! " + error.message );
+          return res.redirect("back");
+      }
+
+      // Force user to logout and login again with the new password
+      await req.logOut();
+      req.flash("success", "Your password has been changed successfully. Please login again with your new password.");
+      return res.redirect("/login");
+  }    
+  return res.redirect("/users/" + req.params.id);
+});
+/* 03102020 - Gaurav - Option to change current password - End */
 
 // follow user
 router.get('/follow/:id', middleware.isLoggedIn, async (req, res) => {
