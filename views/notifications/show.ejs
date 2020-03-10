@@ -13,7 +13,11 @@
                             <td>
                                 <%= notification.username %>  
                                 <% if(notification.campgroundId) { %>
-                                  created a <a href="/campgrounds/<%= notification.campgroundId %>">new campground </a>
+                                  <% if(notification.commentId) { %>
+                                    commented on your campground <a href="/campgrounds/<%= notification.campgroundId %>/<%= notification.commentId %>"><strong><%= notification.campgroundName %></strong></a>
+                                  <% } else { %>
+                                    created a new campground <a href="/campgrounds/<%= notification.campgroundId %>"> <strong><%= notification.campgroundName %></strong></a>
+                                  <% } %> 
                                 <% } else { %>
                                   requested <a href="/users/<%= notification.userId %>">admin access</a>
                                 <% } %>

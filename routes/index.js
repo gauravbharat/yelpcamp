@@ -651,9 +651,13 @@ router.get('/notifications/:id', middleware.isLoggedIn, async (req, res) => {
             return res.redirect("back");
         }
         foundNotification.isRead = true;
-        foundNotification.save();
+        await foundNotification.save();
         if(foundNotification.campgroundId) {
-          return res.redirect(`/campgrounds/${foundNotification.campgroundId}`);
+          if(foundNotification.commentId) {
+            return res.redirect(`/campgrounds/${foundNotification.campgroundId}/${foundNotification.commentId}`)
+          } else {
+            return res.redirect(`/campgrounds/${foundNotification.campgroundId}`);
+          }  
         } else {
           return res.redirect(`/users/${foundNotification.userId}`);
         }  

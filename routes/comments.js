@@ -9,6 +9,8 @@ const fileName = "comments.js";
 
 var Campground = require("../models/campground");
 var Comment = require("../models/comment");
+var Notification = require("../models/notification");
+var User = require("../models/user");
 var middleware = require("../middleware"); // defaults to index.js
 
 // Comments New
@@ -151,8 +153,8 @@ async function addComment(req, res) {
     try {
         foundCampground = await Campground.findOne(searchObject);
         // console.log(fileName + ": addComment : found campground id " + searchObject); 
-    } catch {
-        console.log(err);
+    } catch(error) {
+        console.log(error);
         req.flash("error", "Campground not found!");
         return res.redirect("/campgrounds");
     }    
@@ -182,13 +184,45 @@ async function addComment(req, res) {
                 console.log(err);
             }
         });
+
+        /* 09032020 - Gaurav - Add notification when a comment is added 
+          1. confirm that the campground author and the comment author are not the same
+          2. find the campground author ID
+          3. create a notification with the username, campground ID and name, comment ID and user ID
+          4. update the notifications array for the campground author (user) 
+        */
+        if (!foundCampground.author.id.equals(req.user._id)) {
+          let newNotification = {
+            username: req.user.username,
+            campgroundId: foundCampground._id,
+            commentId: newComment._id,
+            campgroundName: foundCampground.name,
+            userId: req.user._id
+          };
+          let foundUser = await User.findOne({_id: foundCampground.author.id});
+          if(foundUser) {
+            let notification = await Notification.create(newNotification);
+
+            // Push notification to the campground author
+            let campgroundAuthor = await User.findOne({_id: foundCampground.author.id});
+            campgroundAuthor.notifications.push(notification);
+            await campgroundAuthor.save((err) => {
+              if(err) {
+                let error = "Something bad happened pushing new comment notification to campground author!";
+                req.flash("error", error);
+                console.log(err);
+              }
+            });
+          }
+        }  
+        // Add comment, campgroundId and campgroundName to notifactions - End
+
         // console.log(fileName + ": addComment : : added comment for " + foundCampground.name);
         req.flash("success", "Successfully added comment!");
         res.redirect("/campgrounds/" + campgroundId);
-    } catch {
-        console.log(err);
-        let error = "Something bad happened adding comment to campground!";
-        req.flash("error", error);
+    } catch(error) {
+        console.log(error);
+        req.flash("error", "Something bad happened adding comment to campground! " + error.message);
         res.redirect("/campgrounds/" + campgroundId);
     }
 };
@@ -215,23 +249,55 @@ async function destroyComment(req, res) {
     let searchObject = { _id: campgroundId};
 
     if(mongoose.Types.ObjectId.isValid(req.params.comment_id)) {
-        commentId = await mongoose.Types.ObjectId(req.params.comment_id);
+      commentId = await mongoose.Types.ObjectId(req.params.comment_id);
     } else {
-        req.flash("error", "Comment ID is invalid!");
-        console.log("* " + middleware.getLogStr(
-            "comments.js.delete", 
-            "comment ID",
-            req.params.comment_id,
-            req
-        ));
-        return res.redirect("back");
+      req.flash("error", "Comment ID is invalid!");
+      console.log("* " + middleware.getLogStr(
+        "comments.js.delete", 
+        "comment ID",
+        req.params.comment_id,
+        req
+      ));
+      return res.redirect("back");
     }   
 
     let commentSearch = { _id: commentId};
 
+    /* 09032020 - Gaurav - Remove notification traces when comment is deleted
+      1. get the author.id for the campground to remove the notification from
+      2. get all the notification documents for the COMMENT ID (NOT THE CAMPGROUND ID) to delete
+      3. loop through all the notification documents and pull each one from the Users collection
+      4. delete all notifications for the comment ID to delete
+     */
+    try {
+      let foundCampground = await Campground.findOne(searchObject);
+      
+      if(foundCampground) {
+        let campgroundAuthorId = foundCampground.author.id;
+
+        // loop through notifications and pull each one out from the Comment author(user) collection
+        let notifications = await Notification.find({commentId: commentId});
+
+        for(const notification of notifications) {
+          let notificationId = notification._id;
+          await User.findOneAndUpdate(
+            {_id: campgroundAuthorId},
+            { $pull: { notifications: notificationId } }
+          );
+        }
+        // remove comments from notifications collection
+        await Notification.deleteMany({commentId: commentId});
+      }  
+    } catch (error) {
+      console.log("action :: destroy from notifications commentId " + commentId);
+      console.log(middleware.now(), error);
+      req.flash("error", "Error removing comment from notifications!");
+    }
+    /* 09032020 - Gaurav - Remove notification traces when comment is deleted - End */
+
     // destroy comment
     try {
-        await Comment.deleteMany(commentSearch);
+      await Comment.deleteMany(commentSearch);
     } catch (error) {
         console.log("action :: destroy commentId " + commentId);
         console.log(middleware.now() + error);
@@ -241,15 +307,15 @@ async function destroyComment(req, res) {
 
     // remove destroyed comment from associated campground
     try {
-        await Campground.findOneAndUpdate(
-            searchObject,
-            { $pull: { comments: commentId } }
-        );
+      await Campground.findOneAndUpdate(
+        searchObject,
+        { $pull: { comments: commentId } }
+      );
     } catch (error) {
-        console.log("action :: pull destroyed comment and update campgroundId " + campgroundId);
-        console.log(middleware.now() + error.message);
-        req.flash("error", "Error removing comment from associated campground! Please try again after some time or report to web admin.");
-        return res.redirect("/campgrounds/" + req.params.id);
+      console.log("action :: pull destroyed comment and update campgroundId " + campgroundId);
+      console.log(middleware.now() + error.message);
+      req.flash("error", "Error removing comment from associated campground! Please try again after some time or report to web admin.");
+      return res.redirect("/campgrounds/" + req.params.id);
     }
 
     req.flash("success", "Comment deleted");
