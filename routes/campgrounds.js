@@ -38,6 +38,8 @@ cloudinary.config({
 });
 // Cloudinary image upload - end
 
+// console.log('INSIDE CAMPGROUND.JS');
+
 // INDEX - show all campgrounds
 router.get("/", async (req, res) => {
     var perPage = 8;
@@ -189,11 +191,6 @@ router.get("/:id", (req, res) => {
   searchCampground(req, res);
 });
 
-// Pass comment Id to set focus on the newly added comment
-router.get("/:id/:comment_id", (req, res) => {
-  searchCampground(req, res);
-});
-
 // EDIT CAMPGROUND ROUTE
 router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
   // find the campground with the provided ID
@@ -229,6 +226,12 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
       res.render("campgrounds/edit", {campground: foundCampground});
     }
   });
+});
+
+/* MOVED AFTER GET ROUTE "/:id/edit" */
+// Pass comment Id to set focus on the newly added comment
+router.get("/:id/:comment_id", (req, res) => {
+  searchCampground(req, res);
 });
 
 // UPDATE CAMPGROUND ROUTE
@@ -267,15 +270,16 @@ router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), 
   // Remove last uploaded image from Cloudinary, only if user desired to upload new one
   try {
     if(req.file && (editCampgroundId === req.params.id)) {
-      let result = await cloudinary.uploader.destroy(getImagePublicId(req.body.currentPath));
-
+      if(editCampgroundImagePath) {
+        let result = await cloudinary.uploader.destroy(getImagePublicId(editCampgroundImagePath));
+      }
       // reset variables
       editCampgroundId = "";
       editCampgroundImagePath = "";
     }
   }
   catch (error) {
-      console.log(middleware.now() + error);
+    console.log(middleware.now() + error);
   }
 
   try {
