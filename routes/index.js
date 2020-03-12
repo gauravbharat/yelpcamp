@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require("express");
 var router = express.Router();
 var passport = require("passport");
@@ -67,7 +69,7 @@ router.get("/login", (req, res) => {
   // set the return path for campground show page if user came
   // after click on login (on campground page) to add comments
   if(req.query) { 
-    redirectPath = req.query.r;
+    let redirectPath = req.query.r;
     if (redirectPath && redirectPath.length > 0) {
       let delPos = redirectPath.lastIndexOf("/");
       if (delPos > 0) {

@@ -1,6 +1,7 @@
 // ========================
 // CAMPGROUND ROUTES
 // ========================
+"use strict";
 
 var express = require("express");
 const mongoose = require("mongoose");
@@ -46,7 +47,9 @@ router.get("/", async (req, res) => {
   var pageQuery = parseInt(req.query.page);
   var pageNumber = pageQuery ? pageQuery : 1;
   var noMatch = null;
-  let totalUsers = totalAdmins = totalContributors = 0;
+  let totalUsers = 0; 
+  let totalAdmins = 0;
+  let totalContributors = 0;
 
   try {
     if(req.user && req.user.isAdmin) {
