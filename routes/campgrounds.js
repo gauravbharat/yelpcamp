@@ -17,24 +17,24 @@ var editCampgroundImagePath;
 // Cloudinary image upload - start
 var multer = require("multer");
 var storage = multer.diskStorage({
-    fileName: function(req, res, callback) {
-        callback(null, Date.now() + file.originalname);
-    }
+  fileName: function(req, res, callback) {
+      callback(null, Date.now() + file.originalname);
+  }
 });
 var imageFilter = function(req, file, callback) {
     //accept image file only
-    if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-        return callback(new Error('Only image files are allowed!'), false);
-    }
-    callback(null, true);
+  if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    return callback(new Error('Only image files are allowed!'), false);
+  }
+  callback(null, true);
 };
 var upload = multer({storage: storage, fileFilter: imageFilter});
 
 var cloudinary = require('cloudinary');
 cloudinary.config({
-    cloud_name: 'garyd',
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: 'garyd',
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 // Cloudinary image upload - end
 
@@ -42,88 +42,88 @@ cloudinary.config({
 
 // INDEX - show all campgrounds
 router.get("/", async (req, res) => {
-    var perPage = 8;
-    var pageQuery = parseInt(req.query.page);
-    var pageNumber = pageQuery ? pageQuery : 1;
-    var noMatch = null;
-    let totalUsers = totalAdmins = totalContributors = 0;
+  var perPage = 8;
+  var pageQuery = parseInt(req.query.page);
+  var pageNumber = pageQuery ? pageQuery : 1;
+  var noMatch = null;
+  let totalUsers = totalAdmins = totalContributors = 0;
 
+  try {
+    if(req.user && req.user.isAdmin) {
+      totalUsers = await middleware.getUsersCount();
+      totalAdmins = await middleware.getUsersCount({"isAdmin": true});
+      let totalContributorsArr = await Campground.distinct('author.username');
+      totalContributors = (totalContributorsArr) ? totalContributorsArr.length : 0;
+    }  
+  } catch (error) {
+    console.log(error.message);
+  }
+
+  // These variables would be passed to the index page but would be 
+  // displayed only if the current user is an admin
+  if(!totalUsers) { totalUsers = 0; }
+  if(!totalAdmins) { totalAdmins = 0; }
+  if(!totalContributors) { totalContributors = 0; }
+
+  if(req.query.search) {
+    // console.log(req.query.search);
+    const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+    // find the campground
     try {
-      if(req.user && req.user.isAdmin) {
-        totalUsers = await middleware.getUsersCount();
-        totalAdmins = await middleware.getUsersCount({"isAdmin": true});
-        let totalContributorsArr = await Campground.distinct('author.username');
-        totalContributors = (totalContributorsArr) ? totalContributorsArr.length : 0;
-      }  
-    } catch (error) {
-      console.log(error.message);
-    }
+      let foundCampgrounds = await Campground.find({name: regex}).skip((perPage * pageNumber) - perPage).limit(perPage).exec();
 
-    // These variables would be passed to the index page but would be 
-    // displayed only if the current user is an admin
-    if(!totalUsers) { totalUsers = 0; }
-    if(!totalAdmins) { totalAdmins = 0; }
-    if(!totalContributors) { totalContributors = 0; }
+      let count = await Campground.countDocuments({name: regex});
+      let totalCount = await Campground.countDocuments({});
 
-    if(req.query.search) {
-        // console.log(req.query.search);
-        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-        // find the campground
-        try {
-          let foundCampgrounds = await Campground.find({name: regex}).skip((perPage * pageNumber) - perPage).limit(perPage).exec();
-
-          let count = await Campground.countDocuments({name: regex});
-          let totalCount = await Campground.countDocuments({});
-
-          if(!foundCampgrounds || foundCampgrounds.length < 1) {
-              req.flash("error", "No campgrounds match your search.");
-              return res.redirect("/campgrounds");
-          } else {
-              if(!count) { count = 0; }
-              res.render("campgrounds/index", {
-                  campgrounds: foundCampgrounds, 
-                  page: 'campgrounds',
-                  current: pageNumber,
-                  pages: Math.ceil(count / perPage),
-                  noMatch: noMatch,
-                  search: req.query.search,
-                  totalCount: totalCount,
-                  totalUsers: totalUsers,
-                  totalAdmins: totalAdmins,
-                  totalContributors: totalContributors
-              });
-          }   
-        } catch (error) {
-          console.log(error.message);
-          return res.redirect("back");
-        }
-    } else {
-      // Get all campgrounds from DB
-      try {
-        let allCampgrounds = await Campground.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec();
-        
-        let count = await Campground.countDocuments().exec();
-
+      if(!foundCampgrounds || foundCampgrounds.length < 1) {
+        req.flash("error", "No campgrounds match your search.");
+        return res.redirect("/campgrounds");
+      } else {
         if(!count) { count = 0; }
-        delete req.session.redirectTo; //delete redirect to last page
-
         res.render("campgrounds/index", {
-            campgrounds: allCampgrounds, 
-            page: 'campgrounds',
-            current: pageNumber,
-            pages: Math.ceil(count / perPage),
-            noMatch: noMatch,
-            search: false,
-            totalCount: count,
-            totalUsers: totalUsers,
-            totalAdmins: totalAdmins,
-            totalContributors: totalContributors
+          campgrounds: foundCampgrounds, 
+          page: 'campgrounds',
+          current: pageNumber,
+          pages: Math.ceil(count / perPage),
+          noMatch: noMatch,
+          search: req.query.search,
+          totalCount: totalCount,
+          totalUsers: totalUsers,
+          totalAdmins: totalAdmins,
+          totalContributors: totalContributors
         });
-      } catch(error) {
-        console.log(error.message);
-        return res.redirect("back");
-      }  
-    }    
+      }   
+    } catch (error) {
+      console.log(middleware.getErrorStr(error));
+      return res.redirect("back");
+    }
+  } else {
+    // Get all campgrounds from DB
+    try {
+      let allCampgrounds = await Campground.find({}).skip((perPage * pageNumber) - perPage).limit(perPage).exec();
+      
+      let count = await Campground.countDocuments().exec();
+
+      if(!count) { count = 0; }
+      delete req.session.redirectTo; //delete redirect to last page
+
+      res.render("campgrounds/index", {
+        campgrounds: allCampgrounds, 
+        page: 'campgrounds',
+        current: pageNumber,
+        pages: Math.ceil(count / perPage),
+        noMatch: noMatch,
+        search: false,
+        totalCount: count,
+        totalUsers: totalUsers,
+        totalAdmins: totalAdmins,
+        totalContributors: totalContributors
+      });
+    } catch(error) {
+      console.log(middleware.getErrorStr(error));
+      return res.redirect("back");
+    }  
+  }    
 });
 
 // CREATE - create new campground
@@ -279,7 +279,7 @@ router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), 
     }
   }
   catch (error) {
-    console.log(middleware.now() + error);
+    console.log(middleware.getErrorStr(error));
   }
 
   try {
@@ -290,7 +290,7 @@ router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), 
     let updatedCampground = await Campground.findOneAndUpdate(searchObject, req.body.campground);
   }
   catch(error) {
-    console.log(error);
+    console.log(middleware.getErrorStr(error));
     req.flash("error", "Error updating campground. Please try again after some time");
     return res.redirect("/campgrounds");
   }
@@ -333,113 +333,113 @@ function searchCampground(req, res) {
     } else {
       // render show template with that campground
       res.render("campgrounds/show", {
-          campground: foundCampground
-        , newUserCommentId: commentId
+        campground: foundCampground
+      , newUserCommentId: commentId
       });
     }
   });
 };
 
 async function destroyCampground(req, res){
-    let campgroundId;
+  let campgroundId;
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id)) {
-      campgroundId = await mongoose.Types.ObjectId(req.params.id);
-    } else {
-      req.flash("error", "Campground ID is invalid!");
-      console.log("* " + middleware.getLogStr(
-        "campground.js.delete", 
-        "campground ID",
-        req.params.id,
-        req
-      ));
-      return res.redirect("/campgrounds");
-    }
-
-    let searchObject = { _id: campgroundId};
-
-    var foundCampground;
-    var commentsArr;
-    var campgroundImagePath;
-
-    // Get the array of Comments associate with this Campground
-    try {
-      foundCampground = await Campground.findOne(searchObject);
-      commentsArr = foundCampground.comments;
-      campgroundImagePath = foundCampground.image;
-    } catch (error) {
-      console.log("action :: fetch campground data for campgroundId " + campgroundId);
-      console.log(middleware.now() + error);
-      req.flash("error", "Campground not found!");
-      return res.redirect("/campgrounds");
-    }    
-
-    /* 09032020 - Gaurav - Remove notification traces when campground is deleted 
-      1. get the followers of the current campground author
-      2. get all the notifications related to the campground being deleted
-      3. loop through all the notifications
-      4. loop through all the current campground author followers and pull out the notification
-      5. delete all notifications documents for the campground ID being deleted
-    */
-    try {
-      let campgroundAuthor = await User.findOne({_id: foundCampground.author.id}).populate('followers').exec();
-      let notifications = await Notification.find({campgroundId: campgroundId});
-
-      for(const follower of campgroundAuthor.followers) {
-        for(const notification of notifications) {
-          follower.notifications.pull(notification);
-          await follower.save();
-        }
-      }  
-
-      await Notification.deleteMany({campgroundId: campgroundId});
-
-    } catch (error) {
-      console.log("action :: destroy from notifications campgroundId " + campgroundId);
-      console.log(middleware.now(), error.message);
-      req.flash("error", "Error removing campground from notifications!");
-    }
-
-    // Destroy Comments associated with this Campground
-    try {
-      if(commentsArr && commentsArr.length > 0) {
-        for (const comment of commentsArr) {
-          let commentId = await mongoose.Types.ObjectId(comment);
-          let commentSearch = { _id: commentId};
-          await Comment.deleteMany(commentSearch);
-        }
-      }
-    } catch (error) {
-      console.log("action :: destroy comments associated with campgroundId " + campgroundId);
-      console.log(middleware.now() + error);
-      req.flash("error", "Error destroying comments first for the campground");
-      return res.redirect("/campgrounds");
-    }
-
-    // destroy image uploaded on Cloudinary
-    try {
-      if(campgroundImagePath) {
-        let result = await cloudinary.uploader.destroy(getImagePublicId(campgroundImagePath));
-      }
-    }
-    catch (error){
-      console.log(middleware.now() + error);
-    }
-
-    // finally destroy the campground
-    try {
-      await Campground.deleteMany(searchObject);
-    } catch (error) {
-      console.log("action :: destroy campgroundId " + campgroundId);
-      console.log(middleware.now() + error);
-      req.flash("error", "Error removing campground! Please try again after some time or report to web admin.");
-      return res.redirect("/campgrounds");
-    }
-
-    req.flash("success", "Campground removed successfully");
+  if(mongoose.Types.ObjectId.isValid(req.params.id)) {
+    campgroundId = await mongoose.Types.ObjectId(req.params.id);
+  } else {
+    req.flash("error", "Campground ID is invalid!");
+    console.log("* " + middleware.getLogStr(
+      "campground.js.delete", 
+      "campground ID",
+      req.params.id,
+      req
+    ));
     return res.redirect("/campgrounds");
+  }
 
-    // res.send("OKAY SO FAR"); /* TEST CODE */
+  let searchObject = { _id: campgroundId};
+
+  var foundCampground;
+  var commentsArr;
+  var campgroundImagePath;
+
+  // Get the array of Comments associate with this Campground
+  try {
+    foundCampground = await Campground.findOne(searchObject);
+    commentsArr = foundCampground.comments;
+    campgroundImagePath = foundCampground.image;
+  } catch (error) {
+    console.log("action :: fetch campground data for campgroundId " + campgroundId);
+    console.log(middleware.getErrorStr(error));
+    req.flash("error", "Campground not found!");
+    return res.redirect("/campgrounds");
+  }    
+
+  /* 09032020 - Gaurav - Remove notification traces when campground is deleted 
+    1. get the followers of the current campground author
+    2. get all the notifications related to the campground being deleted
+    3. loop through all the notifications
+    4. loop through all the current campground author followers and pull out the notification
+    5. delete all notifications documents for the campground ID being deleted
+  */
+  try {
+    let campgroundAuthor = await User.findOne({_id: foundCampground.author.id}).populate('followers').exec();
+    let notifications = await Notification.find({campgroundId: campgroundId});
+
+    for(const follower of campgroundAuthor.followers) {
+      for(const notification of notifications) {
+        follower.notifications.pull(notification);
+        await follower.save();
+      }
+    }  
+
+    await Notification.deleteMany({campgroundId: campgroundId});
+
+  } catch (error) {
+    console.log("action :: destroy from notifications campgroundId " + campgroundId);
+    console.log(middleware.getErrorStr(error));
+    req.flash("error", "Error removing campground from notifications!");
+  }
+
+  // Destroy Comments associated with this Campground
+  try {
+    if(commentsArr && commentsArr.length > 0) {
+      for (const comment of commentsArr) {
+        let commentId = await mongoose.Types.ObjectId(comment);
+        let commentSearch = { _id: commentId};
+        await Comment.deleteMany(commentSearch);
+      }
+    }
+  } catch (error) {
+    console.log("action :: destroy comments associated with campgroundId " + campgroundId);
+    console.log(middleware.getErrorStr(error));
+    req.flash("error", "Error destroying comments first for the campground");
+    return res.redirect("/campgrounds");
+  }
+
+  // destroy image uploaded on Cloudinary
+  try {
+    if(campgroundImagePath) {
+      let result = await cloudinary.uploader.destroy(getImagePublicId(campgroundImagePath));
+    }
+  }
+  catch (error){
+    console.log(middleware.getErrorStr(error));
+  }
+
+  // finally destroy the campground
+  try {
+    await Campground.deleteMany(searchObject);
+  } catch (error) {
+    console.log("action :: destroy campgroundId " + campgroundId);
+    console.log(middleware.getErrorStr(error));
+    req.flash("error", "Error removing campground! Please try again after some time or report to web admin.");
+    return res.redirect("/campgrounds");
+  }
+
+  req.flash("success", "Campground removed successfully");
+  return res.redirect("/campgrounds");
+
+  // res.send("OKAY SO FAR"); /* TEST CODE */
 };
 
 function escapeRegex(text) {

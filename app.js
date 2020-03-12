@@ -97,7 +97,7 @@ app.use(async function(req, res, next){
             //store the notifications array in a local variable
             res.locals.notifications = user.notifications.reverse();
         } catch (error) {
-            console.log(error.message);
+            console.log(`${(new Date()).toString()} \nError name: ${error.message} \nError message: ${error.message}`);
         }
     }
 
