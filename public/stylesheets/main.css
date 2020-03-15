@@ -35,11 +35,21 @@ body {
     display: inline;
 }
 
-/* 03042020 - Gaurav - Disabled pointer for all disabled buttons */
+/* 03152020 - Gaurav - Wrap notification text in the dropdown menu when
+display is mobile window - Start */
+@media screen and (max-width: 576px) {
+  #headerDDItem { 
+    white-space: normal;
+  }
+}
+/* 03152020 - Gaurav - End */
+
+/* 03042020 - Gaurav - Disabled pointer for all disabled buttons - Start */
 button[disabled="true"] {
   cursor: not-allowed;
   pointer-events: all !important;
 }
+/* 03042020 - Gaurav - End */
 
 #map {
     height: 400px;

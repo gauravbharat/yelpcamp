@@ -45,23 +45,25 @@
             </div>    
           </div> 
         <% } else { %>
-          <% if(currentUser.isRequestedAdmin) { %>
-            <div class="card mt-2">
-              <div class="card-body">
-                <p class="text-muted">Administrator access requested:</p>
-                <button type="button" class="btn btn-primary btn-block" disabled="true"><span class="spinner-grow spinner-grow-sm"></span>Requested</button>
+          <% if(currentUser._id.equals(blogUser._id)) { %>
+            <% if(currentUser.isRequestedAdmin) { %>
+              <div class="card mt-2">
+                <div class="card-body">
+                  <p class="text-muted">Administrator access requested:</p>
+                  <button type="button" class="btn btn-primary btn-block" disabled="true"><span class="spinner-grow spinner-grow-sm"></span>Requested</button>
+                </div>
               </div>
-            </div>
-          <% } else { %>
-            <div class="card mt-2">
-              <div class="card-body">
-                <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
-                  <p>Request administrator access:</p>
-                  <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()">Request</button>
-                </form>
-              </div>
-            </div>    
-          <% } %>
+            <% } else { %>
+              <div class="card mt-2">
+                <div class="card-body">
+                  <form id="requestAdminAccessForm" action="/reqAdmin/<%= blogUser._id %>/true" method="GET">
+                    <p>Request administrator access:</p>
+                    <button id="requestBtn" type="button" class="btn btn-outline-primary btn-block" onclick="requestAdminAccess()">Request</button>
+                  </form>
+                </div>
+              </div>    
+            <% } %>
+          <% } %>  
         <% } %>       
       <% } %>   
   </div>

@@ -1,12 +1,20 @@
 "use strict";
 const mongoose = require("mongoose");
-var Campground = require("../models/campground");
-var Comment = require("../models/comment");
-var User = require("../models/user");
-var Notification = require("../models/notification");
+const COMMENT_ID = 'COMMENT_ID';
+const CAMPGROUND_ID = 'CAMPGROUND_ID';
+
+let Campground = require("../models/campground");
+let Comment = require("../models/comment");
+let util = require("../scripts/backend/general/util"); 
+let sanitiseParms = {
+  inputId: String
+, location: String
+, option: String
+, outputId: undefined
+}
 
 // all middleware goes here
-var middlewareObj = {};
+let middlewareObj = {};
 
 middlewareObj.checkCampgroundOwnership = (req, res, next) => {
     // console.log(req.method);
@@ -16,19 +24,14 @@ middlewareObj.checkCampgroundOwnership = (req, res, next) => {
     // find the campground with the provided ID in the route
     let campgroundId;
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id)) {
-      campgroundId = mongoose.Types.ObjectId(req.params.id);
-    } else {
-      req.flash("error", "Campground ID is invalid!");
-      console.log("* " + middlewareObj.getLogStr(
-          "index.js.checkCampgroundOwnership", 
-          "campground ID",
-          req.params.id,
-          req
-      ));
-      return res.redirect("/campgrounds");
-    }
-
+    sanitiseParms.inputId = req.params.id;
+    sanitiseParms.location = 'middlewareObj.checkCampgroundOwnership';
+    sanitiseParms.option = CAMPGROUND_ID;
+    let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
+    if(redirectPath) { return res.redirect(redirectPath); }
+    /* if redirectPath is returned undefined or null or blank, outputId is supposed to be returned as
+    a valid ObjectId */
+    campgroundId = sanitiseParms.outputId;  
     let searchObject = { _id: campgroundId};
 
     Campground.findOne(searchObject, (err, foundCampground) => {
@@ -59,31 +62,19 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
     let campgroundId;
     let commentId;
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id)) {
-      campgroundId = mongoose.Types.ObjectId(req.params.id);
-    } else {
-      req.flash("error", "Campground ID is invalid!");
-      console.log("* " + middlewareObj.getLogStr(
-          "index.js.checkCommentOwnership", 
-          "campground ID",
-          req.params.id,
-          req
-      ));
-      return res.redirect("/campgrounds");
-    }
+    sanitiseParms.inputId = req.params.id;
+    sanitiseParms.location = 'middlewareObj.checkCommentOwnership';
+    sanitiseParms.option = CAMPGROUND_ID;
+    let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
+    if(redirectPath) { return res.redirect(redirectPath); }
+    campgroundId = sanitiseParms.outputId; 
 
-    if(mongoose.Types.ObjectId.isValid(req.params.comment_id)) {
-      commentId = mongoose.Types.ObjectId(req.params.comment_id);
-    } else {
-      req.flash("error", "Comment ID is invalid!");
-      console.log("* " + middlewareObj.getLogStr(
-          "index.js.checkCommentOwnership", 
-          "comment ID",
-          req.params.comment_id,
-          req
-      ));
-      return res.redirect("/campgrounds/" + campgroundId);
-    }
+    sanitiseParms.inputId = req.params.comment_id;
+    sanitiseParms.location = 'middlewareObj.checkCommentOwnership';
+    sanitiseParms.option = COMMENT_ID;
+    redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
+    if(redirectPath) { return res.redirect(redirectPath); }
+    commentId = sanitiseParms.outputId; 
 
     let searchObject = { _id: campgroundId};
     let commentSearch = { _id: commentId};
@@ -103,7 +94,7 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
                 return res.redirect("/campgrounds/" + campgroundId);
               } else {
                 if((foundComment.author.id.equals(req.user._id)) || (foundCampground.author.id.equals(req.user._id)) || req.user.isAdmin){
-                  if(res.locals.debugMode) { console.log(middlewareObj.now() + "PASSED req.method == DELETE inside checkCommentOwnership");}
+                  if(res.locals.debugMode) { console.log(util.now(), "PASSED req.method == DELETE inside checkCommentOwnership");}
                   next();
                 } else {
                   req.flash("error", "You don't have permission to do that!");
@@ -122,7 +113,7 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
           } else {
             // ONLY the admin or the comment author, can edit the comment
             if((foundComment.author.id.equals(req.user.id)) || req.user.isAdmin) {
-              if(res.locals.debugMode) { console.log(middlewareObj.now() + "PASSED line 123 inside checkCommentOwnership");}
+              if(res.locals.debugMode) { console.log(util.now(), "PASSED line 123 inside checkCommentOwnership");}
               next();
             } else {
               req.flash("error", "You don't have permission to do that!");
@@ -160,95 +151,6 @@ middlewareObj.isLoggedIn = (req, res, next) => {
 
   req.flash("error", "You need to be logged in to do that!");
   res.redirect("/login");
-};
-
-middlewareObj.now = () => {
-  return (new Date()).toString();
-};
-
-/* 03122020 - Gaurav - Return a formatted error string for the returned data */
-middlewareObj.getErrorStr = (p_err) => {
-  return `${(new Date()).toString()} \nError name: ${p_err.message} \nError message: ${p_err.message}`;
-}
-
-middlewareObj.getLogStr = (pEventLocation, pInvalidField, pInvalidID, req) => {
-        
-  let username = "unknown";
-  let userid = "unknown";
-
-  if(!pInvalidID) { pInvalidID = "null"};
-
-  if(req.user){
-    username = req.user.username;
-    userid = req.user._id;
-  }
-
-  let retStr = middlewareObj.now() + 
-    " :: inside " + pEventLocation + 
-    " : " + pInvalidField + " " + pInvalidID + 
-    " is passed invalid for username " + username + 
-    " and user ID " + userid;
-  
-  return retStr;    
-
-};
-
-middlewareObj.getUsersCount = async (searchObject) => {
-  let totalCount = 0;
-
-  try {
-    if(searchObject) {
-      totalCount = await User.countDocuments(searchObject);
-    } else {
-      totalCount = await User.countDocuments({});
-    }  
-  } catch (error) {
-    console.log(middlewareObj.getErrorStr(error));
-  }
-
-  return totalCount;
-}
-
-middlewareObj.notifyAdminRequest = async (notificationDataObject) => {
-  // loop through all the admins and update their notifications with
-  // the user details who requested Admin access
-  let admins;
-
-  try {
-    admins = await User.find({"isAdmin": true});
-    for(const admin of admins) {
-      let notification = await Notification.create(notificationDataObject);
-      admin.notifications.push(notification);
-      admin.save();
-    }
-  } catch (error) {
-    console.log(middlewareObj.now() + " Error fetching all users with admin roles in middleware.notifyAdminRequest!");
-    console.log(middlewareObj.getErrorStr(error));
-    return;    
-  }
-}
-
-async function findCampground (searchObject) {
-  var foundCampground;
-  try {
-    foundCampground = await Campground.findOne(searchObject);
-  } catch(error) {
-    console.log(middlewareObj.getErrorStr(error));
-    foundCampground = null;
-  }
-  return foundCampground;
-};
-
-async function findComment (searchObject) {
-  var foundComment;
-  try {
-    foundComment = await Comment.findOne(searchObject);
-  } catch(error) {
-    console.log(middlewareObj.getErrorStr(error));
-    foundComment = null;
-  }
-
-  return foundComment;
 };
 
 module.exports = middlewareObj;
