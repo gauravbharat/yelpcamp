@@ -21,7 +21,7 @@
             <p><em>Submitted By <a href="/users/<%= campground.author.id %>"><%= campground.author.username %></a>, <%= moment(campground.created).fromNow() %></em></p>
             <% if((currentUser && campground.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin)){ %>
               <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
-              <form class="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+              <form class="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST" onsubmit="formSubmitted()">
                   <button class="btn btn-sm btn-danger">Delete</button>
               </form>
             <% } %> <!-- Is User authorized for Edit and Delete Campground buttons check ends --> 
@@ -42,7 +42,7 @@
 
                     <h6 class="p-3 mb-2 bg-light text-center">You need to login before you can comment. <a href="/login/?r=/campgrounds/<%= campground._id %>">Click here</a> to go to the login page.</h6>
                   <% } else { %> 
-                    <form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+                    <form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST" onsubmit="formSubmitted()">
                         <div class="form-label-group">
                           <input class="form-control" type="text" id="commentText" name="comment[text]" placeholder="Type comment" required>
                           <label for="commentText">Type comment</label>
@@ -93,7 +93,7 @@
                               <% } %>   <!-- Is User authorized for Edit Comment button check ends --> 
                               <!-- Delete comment button -->
                               <% if((currentUser && campground.author.id.equals(currentUser._id)) || (currentUser && comment.author.id.equals(currentUser._id)) || (currentUser && currentUser.isAdmin)){ %>
-                                <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST" onsubmit="formSubmitted()">
                                     <button class="btn btn-sm btn-danger" type="submit" role="button" name="outerDeleteButton" id="delBtn:<%= comment._id %>">Delete</button>
                                 </form>
                               <% } %>   <!-- Is User authorized for Delete Comment button check ends --> 

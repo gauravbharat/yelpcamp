@@ -7,7 +7,7 @@
             <h1 class="text-center">Create a New Campground</h1>
             <hr>
             <div class="col-lg-8 mx-auto">    
-                <form class="was-validated" action="/campgrounds" method="post" enctype="multipart/form-data">
+                <form class="was-validated" action="/campgrounds" method="post" enctype="multipart/form-data" onsubmit="formSubmitted()">
                     <div class="form-label-group">
                         <input class="form-control" type="text" id="name" name="campground[name]" placeholder="Campground Name" required>
                         <label for="name">Campground Name</label>

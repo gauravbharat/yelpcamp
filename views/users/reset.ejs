@@ -2,7 +2,7 @@
 
 <div class="row">
     <div class="col-md-6 col-xs-12">
-        <form class="form" action="/reset/<%= token %>" method="POST">
+        <form class="form" action="/reset/<%= token %>" method="POST" onsubmit="formSubmitted()">
             <legend class="mb-3">Reset Password</legend>
             <hr>
             <div class="form-label-group">

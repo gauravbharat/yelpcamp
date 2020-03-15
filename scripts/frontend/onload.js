@@ -13,15 +13,24 @@
 */
 
 document.addEventListener('readystatechange', event => {
-  let loadingModal = document.getElementById('loading');
-  if (event.target.readyState === "loading") {   
-    if(loadingModal) { loadingModal.style.display = 'block'; }
-  }
-  if (event.target.readyState === "interactive") {   
-    if(loadingModal) { loadingModal.style.display = 'block'; }
-  }
-  if (event.target.readyState === "complete") {
-    // console.log('inside readyState === "complete"', loadingModal);
-    if(loadingModal) { loadingModal.style.display = 'none'; }
-  }
+  // if ((event.target.readyState === "loading") || (event.target.readyState === "interactive")) {   
+  //   loadingImage('SHOW');
+  // }
+  /* 03152020 - Gaurav - Refactored code to remove showing of loading image on page load. May get 
+    irritating for the user since the browser window title already shows it by default. Instead
+    added code to hide any loading image, after the page load is complete. The loading image may 
+    be shown on any CRUD operation to hold-off the user from interacting with the browser till 
+    the operation is completed. */
+  if (event.target.readyState === "complete") { loadingImage('HIDE'); }
 });
+
+function loadingImage(option) {
+  let loadingModal = document.getElementById('loading');
+  if(loadingModal) {
+    (option === 'SHOW') ? loadingModal.style.display = 'block' : loadingModal.style.display = 'none';
+  }
+}
+
+function formSubmitted() {
+  loadingImage('SHOW');
+}

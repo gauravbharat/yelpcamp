@@ -94,7 +94,7 @@
     <% if(currentUser && (currentUser._id.equals(blogUser._id))) { %>   
       </div>
       <div id="userInfo" class="container tab-pane active mt-2">
-        <form class="form" id="updateUserInfoForm" action="/users/<%= blogUser._id %>/userinfo?_method=PUT" method="POST">
+        <form class="form" id="updateUserInfoForm" action="/users/<%= blogUser._id %>/userinfo?_method=PUT" method="POST" onsubmit="formSubmitted()">
           <div class="form-label-group">
             <input type="text" name="username" class="form-control" value="<%= blogUser.username %>" disabled>
             <label for="username">@username</label>
@@ -133,7 +133,7 @@
       
       <!-- Modal body -->
       <div class="modal-body">
-        <form class="form-group" action="/users/<%= blogUser._id %>/avatar?_method=PUT" method="POST">
+        <form class="form-group" action="/users/<%= blogUser._id %>/avatar?_method=PUT" method="POST" onsubmit="formSubmitted()">
           <div class="form-label-group">
             <input class="form-control" type="text" name="avatar" id="avatar" placeholder="Avatar URL">
             <label class="text-nowrap overflow-auto" id="avatarLabel" for="avatar">Avatar URL</label>
@@ -202,6 +202,8 @@
 
     document.getElementById("adminCheck").value = document.getElementById("adminCheck").checked;
     document.getElementById("pubCheck").value = document.getElementById("pubCheck").checked;
+
+    loadingImage('SHOW'); 
     // trigger form action
     document.getElementById("updateAdminOptionsForm").submit();
   };
@@ -210,6 +212,7 @@
     document.getElementById("requestBtn").value = "Requesting..";
     document.getElementById("requestBtn").disabled = true;
 
+    loadingImage('SHOW'); 
     document.getElementById("requestAdminAccessForm").submit();
   };
 

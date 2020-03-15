@@ -86,6 +86,9 @@ async function toggleEdit(p_currentElement, p_campId) {
               return;
             }
 
+            // 03152020 - Gaurav - Show loading image when user clicks update
+            loadingImage('SHOW');
+
             // trigger form action
             document.getElementById(innerEditFormId).submit();
           }
