@@ -127,9 +127,6 @@
 <script>
   /* 03102020 - Gaurav - Scroll to the newly added comment to a user campground. Expected to trigger from Notifications show page or notifications dropdown only! */
   document.addEventListener('readystatechange', event => {
-    // if (event.target.readyState === "interactive") {   //same as:  ..addEventListener("DOMContentLoaded".. and   jQuery.ready
-    //     alert("All HTML DOM elements are accessible");
-    // }
     if (event.target.readyState === "complete") {
       let commentId = `<%= newUserCommentId %>`;
       if(commentId){
