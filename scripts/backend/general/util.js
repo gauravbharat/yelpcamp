@@ -19,6 +19,12 @@ const constants = Object.freeze({
   , USER_INFO: 'USER_INFO'
   , USER_PASSWORD_CHANGE: 'USER_PASSWORD_CHANGE'
   , DEFAULT_AVATAR_URL: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD'
+  , NOTIFY_NEW_CAMPGROUND: 0
+  , NOTIFY_NEW_COMMENT: 1
+  , NOTIFY_USER_ADMIN_REQ: 2
+  , CREATE: 'CREATE'
+  , UPDATE: 'UPDATE'
+  , DELETE: 'DELETE'
 });
 
 let utilityObj = {};

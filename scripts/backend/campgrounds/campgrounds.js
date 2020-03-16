@@ -132,11 +132,13 @@ campgroundObj.createCampground = async (req, res) => {
     // get all the followers for the currently logged-in user from User collection
     let currentUser = await User.findOne(searchObject).populate('followers').exec();
 
+    // Send notificationType = 0, for new campground
     let newNotification = {
       username: req.user.username,
       campgroundId: addedCampground._id,
       campgroundName: addedCampground.name,
-      userId: req.user._id
+      userId: req.user._id,
+      notificationType: util.utilConstants.NOTIFY_NEW_CAMPGROUND
     };
 
     /* 1. loop through all the followers of the current user, 

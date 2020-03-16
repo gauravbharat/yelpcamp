@@ -103,12 +103,14 @@ commentObj.createNewComment = async (req, res) => {
       4. update the notifications array for the campground author (user) 
     */
     if (!foundCampground.author.id.equals(req.user._id)) {
+      // Send notificationType = 1, for new user comment on campground
       let newNotification = {
         username: req.user.username,
         campgroundId: foundCampground._id,
         commentId: newComment._id,
         campgroundName: foundCampground.name,
-        userId: req.user._id
+        userId: req.user._id,
+        notificationType: util.utilConstants.NOTIFY_NEW_COMMENT
       };
       let foundUser = await User.findOne({_id: foundCampground.author.id});
       if(foundUser) {

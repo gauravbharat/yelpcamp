@@ -13,7 +13,16 @@ var notificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
   },
-  campgroundName: {type: String}
+  campgroundName: {type: String},
+  notificationType: { type: Number, required: true }
 });
+
+/* 
+  Notification Types:
+  Action                      Value
+  New Campground              0
+  New Comment                 1
+  User Admin Request          2
+ */
 
 module.exports = mongoose.model("Notification", notificationSchema);

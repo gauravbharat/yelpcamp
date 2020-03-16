@@ -40,21 +40,19 @@
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" id="notificationDropDown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Notifications <span class="badge badge-light"><%= notifications.length %></span></a>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationDropDown">
-                        <a class="dropdown-item" href="/notifications">View past notifications</a>
+                        <a class="dropdown-item small" href="/notifications">View past notifications</a>
                       <% notifications.forEach(function(notification, index){ %>
                         <% if(!notification.isRead) { %>
                           <% if(index === 0) { %>
                             <div class="dropdown-divider"></div>
                           <% } %> 
-                          <a class="dropdown-item" id="headerDDItem" href="/notifications/<%= notification.id %>"><%= notification.username %> 
-                            <% if(notification.campgroundId) { %>
-                              <% if(notification.commentId) { %>
-                                commented on your campground <strong><%= notification.campgroundName %></strong>
-                              <% } else { %>
-                                created a new campground <strong><%= notification.campgroundName %></strong>
-                              <% } %> 
-                            <% } else { %>
-                              requested admin access
+                          <a class="dropdown-item small" id="headerDDItem" href="/notifications/<%= notification.id %>"><%= notification.username %> 
+                            <% if(notification.notificationType === 0) { %>
+                              created a new campground <strong><%= notification.campgroundName %></strong>     
+                            <% } else if(notification.notificationType === 1) { %>
+                              commented on your campground <strong><%= notification.campgroundName %></strong>     
+                            <% } else if(notification.notificationType === 2)  { %>
+                              requested admin access     
                             <% } %>
                           </a>
                         <% } %>  

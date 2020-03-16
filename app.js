@@ -92,14 +92,14 @@ app.use(async function(req, res, next){
     res.locals.currentUser = req.user;
 
     if(req.user) {
-        /* PERFORMANCE CHECK - Performance issue if user have thousands of notifications. Run as a separate process then or load first 5 and have a 'show more' button to load more notifications. */
-        try {
-            let user = await User.findById(req.user._id).populate('notifications', null, { isRead: false }).exec();
-            //store the notifications array in a local variable
-            res.locals.notifications = user.notifications.reverse();
-        } catch (error) {
-            console.log(`${(new Date()).toString()} \nError name: ${error.message} \nError message: ${error.message}`);
-        }
+      /* PERFORMANCE CHECK - Performance issue if user have thousands of notifications. Run as a separate process then or load first 5 and have a 'show more' button to load more notifications. */
+      try {
+        let user = await User.findById(req.user._id).populate('notifications', null, { isRead: false }).exec();
+        //store the notifications array in a local variable
+        res.locals.notifications = user.notifications.reverse();
+      } catch (error) {
+        console.log(`${(new Date()).toString()} \nError name: ${error.message} \nError message: ${error.message}`);
+      }
     }
 
     res.locals.error = req.flash("error");

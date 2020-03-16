@@ -124,6 +124,7 @@ async function updateUser(req, res, option) {
       let avatar = '';
       let commentAuthorSearch = '';
       let commentAuthorUpdate = '';
+      let notificationQuery;
 
       switch(option) {
         case util.utilConstants.USER_ADMIN_OPTIONS:
@@ -134,6 +135,12 @@ async function updateUser(req, res, option) {
           if(req.body.isAdmin) { 
             updateFields.isAdmin = true;
             updateFields.isRequestedAdmin = false;
+            
+            notificationQuery = {
+              userId: userId 
+            , notificationType: util.utilConstants.NOTIFY_USER_ADMIN_REQ  
+            };
+
           } else {
             updateFields.isAdmin = false;
           }
@@ -143,7 +150,6 @@ async function updateUser(req, res, option) {
           } else {
             updateFields.isPublisher = false;
           }
-          
           break;
         case util.utilConstants.USER_INFO:  
 
@@ -239,6 +245,12 @@ async function updateUser(req, res, option) {
         on all user comments */
         let updatedComments = await Comment.updateMany(commentAuthorSearch, commentAuthorUpdate);
       }
+
+      if(option === util.utilConstants.USER_ADMIN_OPTIONS && notificationQuery) {
+        /* 03152020 - Gaurav - Remove any "admin access requested" notifications from 
+        each user with admin role */
+        await notifyAdminRequest(notificationQuery, util.utilConstants.DELETE);
+      }  
 
     } catch (error) {
       req.flash("error", errorPrefix + error.message );
@@ -360,15 +372,17 @@ userObj.showNotification = async (req, res) => {
     }
     foundNotification.isRead = true;
     await foundNotification.save();
-    if(foundNotification.campgroundId) {
-      if(foundNotification.commentId) {
-        return res.redirect(`/campgrounds/${foundNotification.campgroundId}/${foundNotification.commentId}`)
-      } else {
+    switch(foundNotification.notificationType) {
+      case util.utilConstants.NOTIFY_NEW_CAMPGROUND:
         return res.redirect(`/campgrounds/${foundNotification.campgroundId}`);
-      }  
-    } else {
-      return res.redirect(`/users/${foundNotification.userId}`);
-    }  
+        break;
+      case util.utilConstants.NOTIFY_NEW_COMMENT:
+        return res.redirect(`/campgrounds/${foundNotification.campgroundId}/${foundNotification.commentId}`)
+        break;  
+      case util.utilConstants.NOTIFY_USER_ADMIN_REQ:
+      default:
+        return res.redirect(`/users/${foundNotification.userId}`);
+    }
   } catch (error) {
     req.flash("error", error.message);
     console.log(util.getErrorStr(error));
@@ -453,12 +467,14 @@ userObj.requestAdminAccess = async (req, res) => {
   }
 
   try {
+    // Send notificationType = 2, for user admin request
     let newNotification = {
       username: req.user.username,
-      userId: userId
+      userId: userId,
+      notificationType: util.utilConstants.NOTIFY_USER_ADMIN_REQ
     };
 
-    await notifyAdminRequest(newNotification);
+    await notifyAdminRequest(newNotification, util.utilConstants.CREATE);
 
   } catch (error) {
     console.log("action :: update notifications for admin ");
@@ -502,20 +518,28 @@ userObj.requestAdminAccess = async (req, res) => {
   res.redirect('/users/' + req.params.id);
 }
 
-async function notifyAdminRequest(notificationDataObject) {
+async function notifyAdminRequest(notificationDataObject, option) {
   // loop through all the admins and update their notifications with
   // the user details who requested Admin access
   let admins;
+  let errorText;
 
   try {
     admins = await User.find({"isAdmin": true});
-    for(const admin of admins) {
-      let notification = await Notification.create(notificationDataObject);
-      admin.notifications.push(notification);
-      admin.save();
-    }
+
+    if(option === util.utilConstants.CREATE) {
+      errorText = " Error fetching all users with admin roles in userObj.notifyAdminRequest!";
+      for(const admin of admins) {
+        let notification = await Notification.create(notificationDataObject);
+        admin.notifications.push(notification);
+        admin.save();
+      }
+    } else {
+      errorText = " Error deleting all admin request notifications for a user in userObj.notifyAdminRequest!";
+      await Notification.deleteMany(notificationDataObject);
+    }  
   } catch (error) {
-    console.log(util.now() + " Error fetching all users with admin roles in userObj.notifyAdminRequest!");
+    console.log(util.now(), errorText);
     console.log(util.getErrorStr(error));
     return;    
   }
