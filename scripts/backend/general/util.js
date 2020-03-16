@@ -2,14 +2,14 @@
 
 const mongoose = require("mongoose");
 
-let models = {
+let models = Object.freeze({
     User: require("../../../models/user")
   , Campground: require("../../../models/campground")
   , Comment: require("../../../models/comment")
   , Notification: require("../../../models/notification")
-}
+});
 
-const constants = {
+const constants = Object.freeze({
     USER_ID: 'USER_ID'
   , COMMENT_ID: 'COMMENT_ID'
   , CAMPGROUND_ID: 'CAMPGROUND_ID'
@@ -19,7 +19,7 @@ const constants = {
   , USER_INFO: 'USER_INFO'
   , USER_PASSWORD_CHANGE: 'USER_PASSWORD_CHANGE'
   , DEFAULT_AVATAR_URL: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD'
-}
+});
 
 let utilityObj = {};
 
