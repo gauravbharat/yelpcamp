@@ -1,23 +1,12 @@
 "use strict";
 
 let util = require("../general/util"); 
-let Campground = require("../../../models/campground");
-let Comment = require("../../../models/comment");
-let User = require("../../../models/user");
-let Notification = require("../../../models/notification");
+let Campground = util.utilDataModels.Campground;
+let Comment = util.utilDataModels.Comment;
+let User = util.utilDataModels.User;
+let Notification = util.utilDataModels.Notification;
 
-let sanitiseParms = {
-    inputId: String
-  , location: String
-  , option: String
-  , outputId: undefined
-}
-
-const USER_ID = 'USER_ID';
-const COMMENT_ID = 'COMMENT_ID';
-const CAMPGROUND_ID = 'CAMPGROUND_ID';
-const NOTIFICATION_ID = 'NOTIFICATION_ID';
-
+let sanitiseParms = util.sanitiseParms;
 let commentObj = {};
 
 commentObj.showNewComment = (req, res) => {
@@ -26,7 +15,7 @@ commentObj.showNewComment = (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'commentObj.showNewComment';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -57,7 +46,7 @@ commentObj.createNewComment = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'commentObj.createNewComment';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -153,7 +142,7 @@ commentObj.editComment = (req, res) => {
 
   sanitiseParms.inputId = req.params.comment_id;
   sanitiseParms.location = 'commentObj.editComment';
-  sanitiseParms.option = COMMENT_ID;
+  sanitiseParms.option = util.utilConstants.COMMENT_ID;
   
   let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { 
@@ -184,7 +173,7 @@ commentObj.updateComment = async (req, res) => {
 
   sanitiseParms.inputId = req.params.comment_id;
   sanitiseParms.location = 'commentObj.updateComment';
-  sanitiseParms.option = COMMENT_ID;
+  sanitiseParms.option = util.utilConstants.COMMENT_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -216,7 +205,7 @@ commentObj.deleteComment = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'commentObj.deleteComment';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -228,7 +217,7 @@ commentObj.deleteComment = async (req, res) => {
 
   sanitiseParms.inputId = req.params.comment_id;
   sanitiseParms.location = 'commentObj.deleteComment';
-  sanitiseParms.option = COMMENT_ID;
+  sanitiseParms.option = util.utilConstants.COMMENT_ID;
   
   redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }

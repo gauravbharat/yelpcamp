@@ -1,24 +1,10 @@
 "use strict";
 const mongoose = require("mongoose");
 let util = require("../general/util"); 
-let Campground = require("../../../models/campground");
-let Comment = require("../../../models/comment");
-let User = require("../../../models/user");
-let Notification = require("../../../models/notification");
-
-let sanitiseParms = {
-    inputId: String
-  , location: String
-  , option: String
-  , outputId: undefined
-}
-
-const USER_ID = 'USER_ID';
-const COMMENT_ID = 'COMMENT_ID';
-const CAMPGROUND_ID = 'CAMPGROUND_ID';
-const NOTIFICATION_ID = 'NOTIFICATION_ID';
-let editCampgroundId;
-let editCampgroundImagePath;
+let Campground = util.utilDataModels.Campground;
+let Comment = util.utilDataModels.Comment;
+let User = util.utilDataModels.User;
+let Notification = util.utilDataModels.Notification;
 
 let cloudinary = require('cloudinary');
 cloudinary.config({
@@ -27,6 +13,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+let sanitiseParms = util.sanitiseParms;
+let editCampgroundId;
+let editCampgroundImagePath;
 let campgroundObj = {};
 
 campgroundObj.showAllCampgrounds = async (req, res) => {
@@ -178,7 +167,7 @@ campgroundObj.showCampground = (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'campgroundObj.showCampground';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -210,7 +199,7 @@ campgroundObj.editCampground = (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'campgroundObj.editCampground';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -244,7 +233,7 @@ campgroundObj.updateCampground = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'campgroundObj.updateCampground';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -305,7 +294,7 @@ campgroundObj.deleteCampground = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'campgroundObj.deleteCampground';
-  sanitiseParms.option = CAMPGROUND_ID;
+  sanitiseParms.option = util.utilConstants.CAMPGROUND_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }

@@ -3,26 +3,12 @@
 const nodemailer = require("nodemailer");
 
 let util = require("../general/util"); 
-let Campground = require("../../../models/campground");
-let Comment = require("../../../models/comment");
-let User = require("../../../models/user");
-let Notification = require("../../../models/notification");
+let Campground = util.utilDataModels.Campground;
+let Comment = util.utilDataModels.Comment;
+let User = util.utilDataModels.User;
+let Notification = util.utilDataModels.Notification;
 
-let sanitiseParms = {
-    inputId: String
-  , location: String
-  , option: String
-  , outputId: undefined
-}
-
-const USER_ID = 'USER_ID';
-const NOTIFICATION_ID = 'NOTIFICATION_ID';
-const USER_ADMIN_OPTIONS = 'USER_ADMIN_OPTIONS';
-const USER_AVATAR = 'USER_AVATAR';
-const USER_INFO = 'USER_INFO';
-const USER_PASSWORD_CHANGE = 'USER_PASSWORD_CHANGE';
-const DEFAULT_AVATAR_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQJS3-GoTF9xqAIyRROWdTD8SUihnSdP5Ac2uPb6AzgGHHyeuuD';
-
+let sanitiseParms = util.sanitiseParms;
 // all user profile (show, follow, update, notifications, etc.) related logic goes here
 let userObj = {};
 
@@ -37,7 +23,7 @@ userObj.showUserExtended = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.showUserExtended';
-  sanitiseParms.option = USER_ID;
+  sanitiseParms.option = util.utilConstants.USER_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -93,19 +79,19 @@ userObj.showUserExtended = async (req, res) => {
 }
 
 userObj.updateAdminOptions = (req, res) => {
-  updateUser(req, res, USER_ADMIN_OPTIONS);
+  updateUser(req, res, util.utilConstants.USER_ADMIN_OPTIONS);
 }
 
 userObj.updateUserAvatar = (req, res) => {
-  updateUser(req, res, USER_AVATAR);
+  updateUser(req, res, util.utilConstants.USER_AVATAR);
 }
 
 userObj.updateUserInfo = (req, res) => {
-  updateUser(req, res, USER_INFO);
+  updateUser(req, res, util.utilConstants.USER_INFO);
 }
 
 userObj.changeUserPassword = (req, res) => {
-  updateUser(req, res, USER_PASSWORD_CHANGE);
+  updateUser(req, res, util.utilConstants.USER_PASSWORD_CHANGE);
 }
 
 async function updateUser(req, res, option) {
@@ -114,7 +100,7 @@ async function updateUser(req, res, option) {
   let logPrefix = '';
   let successMessage = '';
 
-  if(option === USER_ADMIN_OPTIONS && !req.user.isAdmin) {
+  if(option === util.utilConstants.USER_ADMIN_OPTIONS && !req.user.isAdmin) {
     req.flash("error", "You need to be an administrator to set these user options!");
     return res.redirect("back");
   }
@@ -122,7 +108,7 @@ async function updateUser(req, res, option) {
   if(req.body) {
     sanitiseParms.inputId = req.params.id;
     sanitiseParms.location = 'userObj.updateUser';
-    sanitiseParms.option = USER_ID;
+    sanitiseParms.option = util.utilConstants.USER_ID;
     
     let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
     if(redirectPath) { return res.redirect(redirectPath); }
@@ -140,7 +126,7 @@ async function updateUser(req, res, option) {
       let commentAuthorUpdate = '';
 
       switch(option) {
-        case USER_ADMIN_OPTIONS:
+        case util.utilConstants.USER_ADMIN_OPTIONS:
           errorPrefix = 'Error updating admin fields: ';
           logPrefix = errorPrefix + '\n';
           successMessage = 'Admin fields updated';
@@ -159,7 +145,7 @@ async function updateUser(req, res, option) {
           }
           
           break;
-        case USER_INFO:  
+        case util.utilConstants.USER_INFO:  
 
           errorPrefix = 'Error updating user information: ';
           logPrefix = errorPrefix + '\n';
@@ -185,7 +171,7 @@ async function updateUser(req, res, option) {
           }
           
           break;
-        case USER_AVATAR:
+        case util.utilConstants.USER_AVATAR:
           errorPrefix = 'Error updating Avatar: ';
           logPrefix = errorPrefix + '\n';
           successMessage = 'User avatar updated';
@@ -197,7 +183,7 @@ async function updateUser(req, res, option) {
           }
 
           if(avatar === '') {
-            avatar = DEFAULT_AVATAR_URL;
+            avatar = util.utilConstants.DEFAULT_AVATAR_URL;
           }
 
           updateFields.avatar = avatar;
@@ -205,7 +191,7 @@ async function updateUser(req, res, option) {
           commentAuthorUpdate = { "author.avatar": avatar };
 
           break;
-        case USER_PASSWORD_CHANGE:
+        case util.utilConstants.USER_PASSWORD_CHANGE:
           errorPrefix = 'Error changing user password: ';
           logPrefix = errorPrefix + '\n';
           successMessage = 'Your password has been changed successfully. Please login again with your new password.';
@@ -239,7 +225,7 @@ async function updateUser(req, res, option) {
           return res.redirect("back");
       }
 
-      if(option === USER_PASSWORD_CHANGE) {
+      if(option === util.utilConstants.USER_PASSWORD_CHANGE) {
         // Force user to logout and login again with the new password
         await req.logOut();
         req.flash("success", successMessage);
@@ -248,7 +234,7 @@ async function updateUser(req, res, option) {
         let updatedUser= await User.findOneAndUpdate(userSearch, updateFields);
       }  
 
-      if(option === USER_AVATAR) {
+      if(option === util.utilConstants.USER_AVATAR) {
         /* update comment author avatar path to show the updated avatar for the current user 
         on all user comments */
         let updatedComments = await Comment.updateMany(commentAuthorSearch, commentAuthorUpdate);
@@ -270,7 +256,7 @@ userObj.followAuthor = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.followAuthor';
-  sanitiseParms.option = USER_ID;
+  sanitiseParms.option = util.utilConstants.USER_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -302,7 +288,7 @@ userObj.unfollowAuthor = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.unfollowAuthor';
-  sanitiseParms.option = USER_ID;
+  sanitiseParms.option = util.utilConstants.USER_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -355,7 +341,7 @@ userObj.showNotification = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.showNotification';
-  sanitiseParms.option = NOTIFICATION_ID;
+  sanitiseParms.option = util.utilConstants.NOTIFICATION_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -395,7 +381,7 @@ userObj.deleteNotification = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.deleteNotification';
-  sanitiseParms.option = NOTIFICATION_ID;
+  sanitiseParms.option = util.utilConstants.NOTIFICATION_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
@@ -436,7 +422,7 @@ userObj.requestAdminAccess = async (req, res) => {
 
   sanitiseParms.inputId = req.params.id;
   sanitiseParms.location = 'userObj.requestAdminAccess';
-  sanitiseParms.option = USER_ID;
+  sanitiseParms.option = util.utilConstants.USER_ID;
   
   let redirectPath = await util.sanitiseIdentifier(req, res, sanitiseParms);
   if(redirectPath) { return res.redirect(redirectPath); }
