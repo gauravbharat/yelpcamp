@@ -4,9 +4,11 @@
   <div class="col-md-3 col-sm-6">
     <h2 class="text-center font-weight-bold"><%= blogUser.firstName + " " + blogUser.lastName %></h2>
     <div class="card shadow-sm">
-      <div class="imagehandler">
+      <div <%= (currentUser && currentUser._id.equals(blogUser._id)) ? 'class=imagehandler' : '' %> >
         <img class="card-img-top" src="<%= blogUser.avatar %>" alt="user profile image">
-        <a class="topright" href="#" data-toggle="modal" data-target="#showImageChange" data-backdrop="static"><i class="fa fa-camera"></i></a>
+        <% if(currentUser && (currentUser._id.equals(blogUser._id))) { %> 
+          <a class="topright" href="#" data-toggle="modal" data-target="#showImageChange" data-backdrop="static"><i class="fa fa-camera"></i></a>
+        <% } %>
       </div>  
       <div class="card-body">
         <% if(currentUser && !(currentUser._id.equals(blogUser._id))) { %>
