@@ -77,9 +77,14 @@
                                 <% } else { %>
                                   <%= comment.author.username %>  
                                 <% } %>
-                                <span class="small"><i> <%= moment(comment.created).fromNow() %> </i></span>
+                                <% if(currentUser && campground.author.id.equals(comment.author.id)) { %>
+                                  <span class="small text-secondary bg-light ml-1"> Author</span>
+                                <% } else if(currentUser && comment.author.id.equals(currentUser._id)) { %>
+                                  <span class="small text-secondary bg-light ml-1"> You</span>
+                                <% } %>  
+                                <span class="small text-secondary"><i> &#9679; <%= moment(comment.created).fromNow() %> </i></span>
                                 <% if(comment.isEdited) { %>
-                                    <span class="small"><i>(edited)</i></span>
+                                    <span class="small text-secondary"><i>(edited)</i></span>
                                 <% } %>
                               </p>
                             </div>
