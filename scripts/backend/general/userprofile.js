@@ -547,7 +547,7 @@ userObj.requestAdminAccess = async (req, res) => {
     });
     let mailOptions = {
       to: 'gaurav.mendse@icloud.com',
-      from: process.env.GMAILID,
+      from: `"YelpCamp ⛺" <${process.env.GMAILID}>`,
       subject: 'User ' + username + ' requested Administrator access!',
       text:
         'Hello Gaurav,\n\n' +

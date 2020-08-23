@@ -138,7 +138,7 @@ accessObj.postForgotForm = (req, res, next) => {
         });
         let mailOptions = {
           to: user.email,
-          from: process.env.GMAILID,
+          from: `"YelpCamp ⛺" <${process.env.GMAILID}>`,
           subject: 'YelpCamp (Node.js) Password Reset',
           text:
             'You are receiving this because you (or someone else) have requested the reset of the password.' +
@@ -234,7 +234,7 @@ accessObj.resetPassword = (req, res) => {
         });
         let mailOptions = {
           to: user.email,
-          from: process.env.GMAILID,
+          from: `"YelpCamp ⛺" <${process.env.GMAILID}>`,
           subject: 'YelpCamp: Your password has been changed',
           text:
             'Hello ' +
